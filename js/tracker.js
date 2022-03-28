@@ -4382,7 +4382,7 @@ function update(response, none) {
         !response.positions.position ||
         !response.positions.position.length) {
 
-        // if no vehicles are found, this will remove the spinner and put a friendly message
+        // if no vehicles are found for valid, this will remove the spinner and put a friendly message
         if (none) {
             $("#main .empty").html("<span>No vehicles :(</span>");
         }

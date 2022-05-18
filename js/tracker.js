@@ -1582,7 +1582,9 @@ function updateVehicleInfo(vcallsign, newPosition) {
                     roundNumber(newPosition.gps_lat, 5) + ', ' + roundNumber(newPosition.gps_lon, 5) +'</a>' +
                     ' <i class="icon-location"></i>';
   } else {
-      coords_text = roundNumber(newPosition.gps_lat, 5) + ', ' + roundNumber(newPosition.gps_lon, 5);
+      coords_text = '<a id="launch_mapapp" href="https://www.google.com/maps/search/?api=1&query='+newPosition.gps_lat+','+newPosition.gps_lon+'" target="_blank" rel="noopener noreferrer">' +
+          roundNumber(newPosition.gps_lat, 5) + ', ' + roundNumber(newPosition.gps_lon, 5) +'</a>' +
+          ' <i class="icon-location"></i>';
   }
 
   // format altitude strings

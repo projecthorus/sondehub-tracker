@@ -5,7 +5,7 @@ A fork of [habitat-mobile-tracker](https://github.com/rossengeorgiev/habitat-mob
 ![mobile tracker screenshot](resources/mobiletracker-screencap.png "mobile tracker screenshot")
 
 A webapp for tracking radiosondes. Works an desktop and mobile devices.
-The SondeHub tracker is a continuation of the [HabHub Tracker]](http://tracker.habhub.org).
+The SondeHub tracker is a continuation of the [HabHub Tracker](http://tracker.habhub.org).
 
 ## Features
 

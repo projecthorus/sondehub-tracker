@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="110" height="50">
+  <!-- CSS style acts as container for the color variable. -->
+  <style>
+    :root {
+      <!-- Default to red. -->
+      --dynamic-color: red;
+    }
+  </style>
+    <defs>
+    <linearGradient id="windowGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="white" />
+      <stop offset="200%" stop-color="grey" />
+    </linearGradient>
+  </defs>
+  <!-- Car shape -->
+  <path
+    d="M 108 35 V 27
+       C 108 21 97 16 80 14
+       C 64 1 64 1 52 1
+       H 17
+       C 3 13 3 13 3 23
+       C 0 27 0 35 6 35
+       H 108 Z"
+    fill="var(--dynamic-color)" 
+    stroke="black" stroke-width="1"
+    />
+    <!-- Windows -->
+  <path
+    d="M 77 15 
+       C 60 3 60 3 46 3
+       H 23
+       C 12 12 20 13 24 13
+       Z
+       "
+    fill="url(#windowGradient)" 
+    stroke="black" stroke-width="1"
+    />
+  <circle r="9" cx="17" cy="35" fill="black" />
+  <circle r="9" cx="88" cy="35" fill="black" />
+</svg>

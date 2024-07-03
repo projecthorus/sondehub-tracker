@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="200">
+  <!-- CSS style acts as container for the color variable. -->
+  <style>
+    :root {
+      <!-- Default to red. -->
+      --dynamic-color: red;
+    }
+  </style>
+  <defs>
+    <radialGradient id="parachuteGradient" fx="50%" fy="20%" r="100%">
+      <stop offset="0%" style="stop-color: #eeeeee" />
+      <stop offset="50%" style="stop-color: var(--dynamic-color)" />
+      <stop offset="100%" style="stop-color: grey" />
+    </radialGradient>
+    <radialGradient id="whiteGradient" cx = "50" cy = "12" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" style="stop-color: white" />
+      <stop offset="100%" style="stop-color: grey" />
+    </radialGradient>
+   <linearGradient id="payloadGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="var(--dynamic-color)" />
+      <stop offset="200%" stop-color="black" />
+    </linearGradient>
+  </defs>
+    <!-- Payload cylinder -->
+    <path
+    d="M 32 154 V 176
+      A 18 7 0 0 0 68 176
+      V 154 Z"
+    fill="url(#payloadGradient)" 
+    stroke="black" stroke-width="1"
+    />
+    <!-- Cylinder stripe -->
+    <path
+    d="M 32.5 168 V 174
+      A 18 7 0 0 0 67.5 174
+      V 168
+      A 18 7 0 0 1 32.5 168
+      Z"
+    fill="#FFF" 
+    />
+    <!-- Top surface of payload, to be dynamically colored-->
+    <ellipse cx="50" cy="154" rx="18" ry="7" fill="var(--dynamic-color)" 
+      stroke="black" stroke-width="1"/>
+  <!-- String down to payload -->
+  <line x1="50" y1="118" x2="50" y2="154" 
+      style="stroke:black;stroke-width:1.5" />
+  <!-- The 7 parachute lines -->
+  <line x1="50" y1="120" x2="50" y2="63" style="stroke:black;stroke-width:0.5" />
+  <line x1="50" y1="120" x2="62" y2="62" style="stroke:black;stroke-width:0.5" />
+  <line x1="50" y1="120" x2="38" y2="62" style="stroke:black;stroke-width:0.5" />
+  <line x1="50" y1="120" x2="75" y2="60" style="stroke:black;stroke-width:0.5" />
+  <line x1="50" y1="120" x2="25" y2="60" style="stroke:black;stroke-width:0.5" />
+  <line x1="50" y1="120" x2="90" y2="53" style="stroke:black;stroke-width:0.5" />
+  <line x1="50" y1="120" x2="10" y2="53" style="stroke:black;stroke-width:0.5" />
+  <!-- The colored parachute -->
+  <clipPath id="chuteClip">
+    <path
+    d="M 98 40
+      C 98 8 60 5 50 5
+      C 40 5 2 8 2 40
+      C 2 60 40 63 50 63
+      C 60 63 98 60 98 40
+      Z"
+      />
+    </clipPath>
+  <!-- The actual body of the chute. We use the chuteClip on this and the white wedges to make them align. -->
+  <rect id="chute_base" x="0" y="0" width="100" height="63" fill="url(#parachuteGradient)" clip-path="url(#chuteClip)" />
+  <!-- White wedges around parachute. Starts with the one front, left of center, and goes clockwise -->
+  <path
+    d="M 50 65 V 12 Q 35 30 35 64
+      Z" clip-path="url(#chuteClip)" fill="url(#whiteGradient)"
+      />
+  <path
+    d="M 22 64 Q 22 20 50 12 Q 10 20 10 64
+      Z" clip-path="url(#chuteClip)" fill="url(#whiteGradient)"
+      />
+  <path
+    d="M 2 50 Q 8 12 50 12 Q 8 8 0 40
+      Z" clip-path="url(#chuteClip)" fill="url(#whiteGradient)"
+      />
+  <path
+    d="M 0 22 Q 25 7 50 12 Q 30 5 5 15
+      Z" clip-path="url(#chuteClip)" fill="url(#whiteGradient)"
+      />
+  <path
+    d="M 25 5 Q 42 7 50 12 Q 45 2 35 5
+      Z" clip-path="url(#chuteClip)" fill="url(#whiteGradient)"
+      />
+  <path
+    d="M 50 5 V 12 Q 50 9 60 2
+      Z" clip-path="url(#chuteClip)" fill="url(#whiteGradient)"
+      />
+  <path
+    d="M 75 5 Q 58 7 50 12 Q 70 5 95 15
+      Z" clip-path="url(#chuteClip)" fill="url(#whiteGradient)"
+      />
+ <path
+    d="M 100 22 Q 75 7 50 12 Q 92 8 100 40
+      Z" clip-path="url(#chuteClip)" fill="url(#whiteGradient)"
+      />
+  <path
+    d="M 98 50 Q 92 12 50 12 Q 90 20 90 64
+      Z" clip-path="url(#chuteClip)" fill="url(#whiteGradient)"
+      />
+  <path
+    d="M 78 64 Q 78 20 50 12 Q 65 30 65 64
+      Z" clip-path="url(#chuteClip)" fill="url(#whiteGradient)"
+      />
+  
+</svg>

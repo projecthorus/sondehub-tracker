@@ -18,7 +18,12 @@
     <filter id="blur-filter">
       <feGaussianBlur in="SourceGraphic" stdDeviation="0.4"/>
     </filter>
+    <filter id="car-shadow" filterUnits="userSpaceOnUse">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2"/>
+    </filter>
   </defs>
+  <!-- Shadow on ground under car -->
+  <ellipse rx="50" ry="4" cx="55" cy="43" filter="url(#car-shadow)" fill="black"/>
   <!-- Car shape -->
   <path
     d="M 108 35 V 27

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" opacity="0.35">
+  <!-- CSS style acts as container for the color variable. -->
+  <style>
+    :root {
+      <!-- Default to red. -->
+      --dynamic-color: red;
+    }
+  </style>
+  <defs>
+    <linearGradient id="dynamicGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="white" />
+      <stop offset="50%" stop-color="var(--dynamic-color)" />
+      <stop offset="100%" stop-color="black" />
+    </linearGradient>
+  </defs>
+  
+  <circle r="20" cx="20" cy="20" fill="url(#dynamicGradient)" stroke="black"/>
+  <circle r="9" cx="20" cy="20" stroke="white" stroke-width="6" fill-opacity="0" />
+</svg>

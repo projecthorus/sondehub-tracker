@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="200">
+  <!-- CSS style acts as container for the color variable. -->
+  <style>
+    :root {
+      <!-- Default to red. -->
+      --dynamic-color: red;
+    }
+  </style>
+  <defs>
+    <radialGradient id="balloonGradient" cx="60%" cy="40%" r="40%">
+      <stop offset="0%" style="stop-color: #8e989c;" />
+      <stop offset="100%" style="stop-color: #dee8ec;" />
+    </radialGradient>
+    <linearGradient id="payloadGradient" x1="0%" y1="0%" x2="150%" y2="0%">
+      <stop offset="0%" stop-color="var(--dynamic-color)" />
+      <stop offset="100%" stop-color="black" />
+    </linearGradient>
+  </defs>
+    <!-- Payload cylinder -->
+    <path
+    d="M 32 154 V 176
+      A 18 7 0 0 0 68 176
+      V 154 Z"
+    fill="url(#payloadGradient)" 
+    stroke="black" stroke-width="1"
+    />
+    <!-- Cylinder stripe -->
+    <path
+    d="M 32.5 168 V 174
+      A 18 7 0 0 0 67.5 174
+      V 168
+      A 18 7 0 0 1 32.5 168
+      Z"
+    fill="#FFF" 
+    />
+    <!-- Top surface of payload, to be dynamically colored-->
+    <ellipse cx="50" cy="154" rx="18" ry="7" fill="var(--dynamic-color)" 
+      stroke="black" stroke-width="1"/>
+  <!-- String down to payload -->
+  <line x1="50" y1="118" x2="50" y2="154" 
+      style="stroke:black;stroke-width:1.5" />
+  <!-- The balloon itself -->
+  <path
+     d="M 50 118 H 47 V 115 
+    C 47 103, 2 88, 2 45
+    A 48 40 0 0 1 98 45
+    C 98 88, 53 103, 53 115
+    V 118
+    H 50 Z" 
+    fill="url(#balloonGradient)" 
+    stroke="black" stroke-width="1.5"
+    fill-opacity="0.8"
+    />
+  
+</svg>

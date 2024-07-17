@@ -74,7 +74,7 @@ var manual_pan = false;
 
 var car_index = 0;
 var car_colors = ["blue", "red", "green", "yellow", "teal", "purple"];
-var balloon_colors = ["red", "blue", "green", "magenta", "#fdbc00", "#00ffff"];
+var balloon_colors = ["red", "blue", "lime", "magenta", "#ffb300", "#00ffff"];
 
 var nyan_color_index = 0;
 var nyan_colors = ['nyan', 'nyan-coin', 'nyan-mon', 'nyan-pirate', 'nyan-cool', 'nyan-tothemax', 'nyan-pumpkin', 'nyan-afro', 'nyan-coin', 'nyan-mummy'];

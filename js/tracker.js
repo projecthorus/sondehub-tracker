@@ -74,7 +74,6 @@ var manual_pan = false;
 
 var car_index = 0;
 var car_colors = ["blue", "red", "green", "yellow", "teal", "purple"];
-var balloon_colors_name = ["red", "blue", "green", "purple", "orange", "cyan"];
 var balloon_colors = ["#f00", "blue", "green", "#c700e6", "#ff8a0f", "#0fffca"];
 
 var nyan_color_index = 0;
@@ -2407,7 +2406,7 @@ function redrawPrediction(vcallsign) {
     if(vehicle.prediction_target) {
         vehicle.prediction_target.setLatLng(latlng);
     } else {
-        image_src = recolorSVG(host_url + markers_url + "target.svg", balloon_colors_name[vehicle.color_index]);
+        image_src = recolorSVG(host_url + markers_url + "target.svg", balloon_colors[vehicle.color_index]);
         predictionIcon = new L.icon({
             iconUrl: image_src,
             iconSize: [20,20],
@@ -3110,7 +3109,7 @@ function addPosition(position) {
                 // All the balloon are red.
                 color_index = 0;
             }
-            image_src = recolorSVG(host_url + markers_url + "balloon.svg", balloon_colors_name[color_index]);
+            image_src = recolorSVG(host_url + markers_url + "balloon.svg", balloon_colors[color_index]);
             image_src_size = [46,84];
             image_src_offset = [-35,-46];
 
@@ -3155,7 +3154,7 @@ function addPosition(position) {
             };
 
             marker.shadow = marker_shadow;
-            marker.balloonColor = (vcallsign == "PIE") ? "rpi" : balloon_colors_name[color_index];
+            marker.balloonColor = (vcallsign == "PIE") ? "rpi" : balloon_colors[color_index];
             marker.mode = 'balloon';
             marker.setMode = function(mode) {
                 if(this.mode == mode) return;

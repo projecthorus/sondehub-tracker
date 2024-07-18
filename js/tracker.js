@@ -1652,7 +1652,7 @@ function updateVehicleInfo(vcallsign, newPosition) {
   vehicle.marker.setLatLng(latlng);
 
   if(!!vehicle.marker.setCourse) {
-    if (vehicle.curr_position.gps_heading) {
+    if (vehicle.curr_position.gps_heading && vehicle.marker.rotated) {
         vehicle.marker.setCourse((vehicle.curr_position.gps_heading !== "") ? parseInt(vehicle.curr_position.gps_heading) : 90);
     }
   } 
@@ -3000,10 +3000,10 @@ var marker_rotate_setup = function(marker, image_src) {
     else {
         marker.iconImg = new Image();
         icon_cache[image_src] = marker.iconImg;
-        marker.iconImg.onload = function() {
+        marker.iconImg.addEventListener("load", function() {
             if(!marker.rotated) marker.setCourse(90);
             marker.setLatLng(marker.getLatLng());
-        };
+        })
         marker.iconImg.src = image_src;
     }
 };

@@ -73,8 +73,8 @@ var manual_pan = false;
 // due to complaints it was not visible enough. - 2023-06-03
 
 var car_index = 0;
-var car_colors = ["blue", "red", "green", "yellow", "teal", "purple"];
-var balloon_colors = ["red", "blue", "lime", "magenta", "#ffb300", "#00ffff"];
+var car_colors = ["#a6cee3", "#1f78b4", "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", "#cab2d6"];
+var balloon_colors = ["#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#e6ab02", "#a6761d", "#666666"];
 
 var nyan_color_index = 0;
 var nyan_colors = ['nyan', 'nyan-coin', 'nyan-mon', 'nyan-pirate', 'nyan-cool', 'nyan-tothemax', 'nyan-pumpkin', 'nyan-afro', 'nyan-coin', 'nyan-mummy'];
@@ -2259,16 +2259,20 @@ function set_polyline_visibility(vcallsign, val) {
 
     if(vehicle.prediction_polyline) {
         if (val) {
-            map.addLayer(vehicle.prediction_polyline);
+            map.addLayer(vehicle.prediction_polyline[0]);
+            map.addLayer(vehicle.prediction_polyline[1]);
         } else {
-            map.removeLayer(vehicle.prediction_polyline);
+            map.removeLayer(vehicle.prediction_polyline[0]);
+            map.removeLayer(vehicle.prediction_polyline[1]);
         }
     }
     if(vehicle.prediction_launch_polyline) {
         if (val) {
-            map.addLayer(vehicle.prediction_launch_polyline);
+            map.addLayer(vehicle.prediction_launch_polyline[0]);
+            map.addLayer(vehicle.prediction_launch_polyline[1]);
         } else {
-            map.removeLayer(vehicle.prediction_launch_polyline);
+            map.removeLayer(vehicle.prediction_launch_polyline)[0];
+            map.removeLayer(vehicle.prediction_launch_polyline)[1];
         }
     }
     if(vehicle.prediction_target) {
@@ -2291,7 +2295,8 @@ function set_polyline_visibility(vcallsign, val) {
 
 function removePrediction(vcallsign) {
   if(vehicles[vcallsign].prediction_polyline) {
-    map.removeLayer(vehicles[vcallsign].prediction_polyline);
+    map.removeLayer(vehicles[vcallsign].prediction_polyline[1]);
+    map.removeLayer(vehicles[vcallsign].prediction_polyline[1]);
     vehicles[vcallsign].prediction_polyline = null;
   }
   if(vehicles[vcallsign].prediction_target) {
@@ -2320,13 +2325,22 @@ function drawLaunchPrediction(vcallsign) {
 
     vehicle.prediction_launch_path = line;
 
-    vehicle.prediction_launch_polyline = new L.Polyline(line, {
+    vehicle.prediction_launch_polyline = [new L.Polyline(line, {
             color: balloon_colors[vehicle.color_index],
-            opacity: 0.4,
+            opacity: 0.8,
             weight: 3,
-    })//.addTo(map);
+    }),
+    new L.Polyline(line, {
+        color: "#000",
+        opacity: 0.1,
+        weight: 6,
+})
+]//.addTo(map);
 
-    vehicle.prediction_launch_polyline.on('click', function (e) {
+    vehicle.prediction_launch_polyline[0].on('click', function (e) {
+        mapInfoBox_handle_prediction_path(e);
+    });
+    vehicle.prediction_launch_polyline[1].on('click', function (e) {
         mapInfoBox_handle_prediction_path(e);
     });
 
@@ -2386,16 +2400,27 @@ function redrawPrediction(vcallsign) {
     vehicle.prediction_path = line;
 
     if(vehicle.prediction_polyline !== null) {
-        vehicle.prediction_polyline.setLatLngs(line);
+        vehicle.prediction_polyline[0].setLatLngs(line);
+        vehicle.prediction_polyline[1].setLatLngs(line);
     } else {
-        vehicle.prediction_polyline = new L.Polyline(line, {
+        vehicle.prediction_polyline = [new L.Polyline(line, {
             color: balloon_colors[vehicle.color_index],
-            opacity: 0.5, // Was 0.4
+            opacity: 0.8, // Was 0.4
             weight: 3,
-         })//.addTo(map);
-        vehicle.prediction_polyline.on('click', function (e) {
+         }),
+         new L.Polyline(line, {
+            color: "#000",
+            opacity: 0.1, // Was 0.4
+            weight: 6,
+         })
+        
+        ]//.addTo(map);
+        vehicle.prediction_polyline[0].on('click', function (e) {
             mapInfoBox_handle_prediction_path(e);
         });
+        vehicle.prediction_polyline[1].on('click', function (e) {
+            mapInfoBox_handle_prediction_path(e);
+        })
     }
 
     vehicle.prediction_polyline.path_length = path_length;
@@ -3077,26 +3102,6 @@ function addPosition(position) {
                     weight: 3,
                 })
             ];
-        }
-        else if(vcallsign == "XX") {
-            vehicle_type = "xmark";
-            image_src = host_url + markers_url + "balloon-xmark.png";
-            image_src_size = [48,38];
-            image_src_offset = [0,-38];
-
-            xmarkIcon = new L.icon({
-                iconUrl: image_src,
-                iconSize: image_src_size,
-                iconAnchor: [24, 18],
-            });
-
-            marker = new L.Marker(point, {
-                icon: xmarkIcon,
-                title: vcallsign,
-                zIndexOffset: Z_CAR,
-            });
-
-            marker.addTo(map);
         } else {
             vehicle_type = "balloon";
             let colorHash = 0;
@@ -3154,7 +3159,7 @@ function addPosition(position) {
             };
 
             marker.shadow = marker_shadow;
-            marker.balloonColor = (vcallsign == "PIE") ? "rpi" : balloon_colors[color_index];
+            marker.balloonColor = balloon_colors[color_index];
             marker.mode = 'balloon';
             marker.setMode = function(mode) {
                 if(this.mode == mode) return;
@@ -3303,6 +3308,11 @@ function addPosition(position) {
                     color: balloon_colors[color_index],
                     opacity: 1,
                     weight: 3,
+                }),
+                new L.Polyline(point, {
+                    color: "#fff",
+                    opacity: 0.6,
+                    weight: 6,
                 })
             ];
         }
@@ -3414,11 +3424,13 @@ function addPosition(position) {
         vehicle_info.kill = function() {
             $(".vehicle"+vehicle_info.uuid).remove();
             potentialobjects = [marker, marker_shadow, landing_marker, horizon_circle, horizon_circle_title, subhorizon_circle, subhorizon_circle_title, polyline];
-            if (map.hasLayer(vehicle_info["prediction_polyline"])) { 
-                map.removeLayer(vehicle_info["prediction_polyline"]);
+            if (map.hasLayer(vehicle_info["prediction_polyline"][0])) { 
+                map.removeLayer(vehicle_info["prediction_polyline"][0]);
+                map.removeLayer(vehicle_info["prediction_polyline"][1]);
             }
-            if (map.hasLayer(vehicle_info["prediction_launch_polyline"])) { 
-                map.removeLayer(vehicle_info["prediction_launch_polyline"]);
+            if (map.hasLayer(vehicle_info["prediction_launch_polyline"][0])) { 
+                map.removeLayer(vehicle_info["prediction_launch_polyline"][0]);
+                map.removeLayer(vehicle_info["prediction_launch_polyline"][1]);
             }
             if (map.hasLayer(vehicle_info["prediction_target"])) { 
                 map.removeLayer(vehicle_info["prediction_target"]);

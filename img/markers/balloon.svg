@@ -15,6 +15,9 @@
       <stop offset="0%" stop-color="var(--dynamic-color)" />
       <stop offset="100%" stop-color="black" />
     </linearGradient>
+    <filter id="linesWhiteShadow" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="0" stdDeviation="0.4" flood-color="white" />
+    </filter>
   </defs>
     <!-- Payload cylinder -->
     <path
@@ -38,7 +41,7 @@
       stroke="black" stroke-width="1"/>
   <!-- String down to payload -->
   <line x1="50" y1="118" x2="50" y2="154" 
-      style="stroke:black;stroke-width:1.5" />
+      stroke="black" stroke-width="1.5" filter="url(#linesWhiteShadow)"/>
   <!-- The balloon itself -->
   <path
      d="M 50 118 H 47 V 115 

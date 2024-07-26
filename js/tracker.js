@@ -74,7 +74,7 @@ var manual_pan = false;
 
 var car_index = 0;
 var car_colors = ["#a6cee3", "#1f78b4", "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", "#cab2d6"];
-var balloon_colors = ["#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#e6ab02", "#a6761d", "#666666"];
+var balloon_colors = ["#d95f02", "#7570b3", "#e7298a", "#e6ab02", "#a6761d", "#666666", "blue", "lime", "magenta", "#ffb300", "rebeccapurple"];
 
 var nyan_color_index = 0;
 var nyan_colors = ['nyan', 'nyan-coin', 'nyan-mon', 'nyan-pirate', 'nyan-cool', 'nyan-tothemax', 'nyan-pumpkin', 'nyan-afro', 'nyan-coin', 'nyan-mummy'];

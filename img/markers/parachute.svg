@@ -15,6 +15,9 @@
       <stop offset="0%" stop-color="var(--dynamic-color)" />
       <stop offset="100%" stop-color="black" />
     </linearGradient>
+    <filter id="linesWhiteShadow" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="0" stdDeviation="0.4" flood-color="white" />
+    </filter>
   </defs>
     <!-- Payload cylinder -->
     <path
@@ -36,15 +39,15 @@
       stroke="black" stroke-width="1"/>
   <!-- String down to payload -->
   <line x1="50" y1="118" x2="50" y2="154" 
-      style="stroke:black;stroke-width:1.5" />
+      stroke="black" stroke-width="1.5" filter="url(#linesWhiteShadow)"/>
   <!-- The 7 parachute lines -->
-  <line x1="50" y1="120" x2="50" y2="63" style="stroke:black;stroke-width:0.5" />
-  <line x1="50" y1="120" x2="62" y2="62" style="stroke:black;stroke-width:0.5" />
-  <line x1="50" y1="120" x2="38" y2="62" style="stroke:black;stroke-width:0.5" />
-  <line x1="50" y1="120" x2="75" y2="60" style="stroke:black;stroke-width:0.5" />
-  <line x1="50" y1="120" x2="25" y2="60" style="stroke:black;stroke-width:0.5" />
-  <line x1="50" y1="120" x2="90" y2="53" style="stroke:black;stroke-width:0.5" />
-  <line x1="50" y1="120" x2="10" y2="53" style="stroke:black;stroke-width:0.5" />
+  <line x1="50" y1="120" x2="50" y2="63" stroke="black" stroke-width="0.5" filter="url(#linesWhiteShadow)"/>
+  <line x1="50" y1="120" x2="62" y2="62" stroke="black" stroke-width="0.5" filter="url(#linesWhiteShadow)"/>
+  <line x1="50" y1="120" x2="38" y2="62" stroke="black" stroke-width="0.5" filter="url(#linesWhiteShadow)"/>
+  <line x1="50" y1="120" x2="75" y2="60" stroke="black" stroke-width="0.5" filter="url(#linesWhiteShadow)"/>
+  <line x1="50" y1="120" x2="25" y2="60" stroke="black" stroke-width="0.5" filter="url(#linesWhiteShadow)"/>
+  <line x1="50" y1="120" x2="90" y2="53" stroke="black" stroke-width="0.5" filter="url(#linesWhiteShadow)"/>
+  <line x1="50" y1="120" x2="10" y2="53" stroke="black" stroke-width="0.5" filter="url(#linesWhiteShadow)"/>
   <!-- The colored parachute -->
   <clipPath id="chuteClip">
     <path

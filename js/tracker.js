@@ -1804,15 +1804,15 @@ function updateVehicleInfo(vcallsign, newPosition) {
 
   // determine how to link the vehicle coordinates to a native app, if on a mobile device
   if(ua.indexOf('iphone') > -1) {
-      coords_text = '<a id="launch_mapapp" href="maps://?q='+newPosition.gps_lat+','+newPosition.gps_lon+'">' +
+      coords_text = '<a href="maps://?q='+newPosition.gps_lat+','+newPosition.gps_lon+'">' +
                     roundNumber(newPosition.gps_lat, 5) + ', ' + roundNumber(newPosition.gps_lon, 5) +'</a>' +
                     ' <i class="icon-location"></i>';
   } else if(ua.indexOf('android') > -1) {
-      coords_text = '<a id="launch_mapapp" href="geo:'+newPosition.gps_lat+','+newPosition.gps_lon+'?q='+newPosition.gps_lat+','+newPosition.gps_lon+'('+vcallsign+')">' +
+      coords_text = '<a href="geo:'+newPosition.gps_lat+','+newPosition.gps_lon+'?q='+newPosition.gps_lat+','+newPosition.gps_lon+'('+vcallsign+')">' +
                     roundNumber(newPosition.gps_lat, 5) + ', ' + roundNumber(newPosition.gps_lon, 5) +'</a>' +
                     ' <i class="icon-location"></i>';
   } else {
-      coords_text = '<a id="launch_mapapp" href="https://www.google.com/maps/search/?api=1&query='+newPosition.gps_lat+','+newPosition.gps_lon+'" target="_blank" rel="noopener noreferrer">' +
+      coords_text = '<a href="https://www.google.com/maps/search/?api=1&query='+newPosition.gps_lat+','+newPosition.gps_lon+'" target="_blank" rel="noopener noreferrer">' +
           roundNumber(newPosition.gps_lat, 5) + ', ' + roundNumber(newPosition.gps_lon, 5) +'</a>' +
           ' <i class="icon-location"></i>';
   }

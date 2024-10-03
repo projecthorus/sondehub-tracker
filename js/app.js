@@ -553,12 +553,6 @@ $(window).ready(function() {
         $("#main").removeClass("drag");
     });
 
-    // confirm dialog when launchnig a native map app with coordinates
-    //$('#main').on('click', '#launch_mapapp', function() {
-    //    var answer = confirm("Launch your maps app?");
-    //    return answer;
-    //});
-
     // follow vehicle by clicking on data
     $('#main').on('click', '.row .data', function() {
         var e = $(this).parent();

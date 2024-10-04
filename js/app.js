@@ -445,6 +445,25 @@ var format_time_friendly = function(start, end) {
     }
 };
 
+var format_coordinates = function(lat, lon, name) {
+    var coords_text;
+    var ua =  navigator.userAgent.toLowerCase();
+  
+    // determine how to link the coordinates to a native app, if on a mobile device
+    if(ua.indexOf('iphone') > -1) {
+        coords_text = '<a href="maps://?q='+lat+','+lon+'">' +
+                      roundNumber(lat, 5) + ', ' + roundNumber(lon, 5) +'</a>';
+    } else if(ua.indexOf('android') > -1) {
+        coords_text = '<a href="geo:'+lat+','+lon+'?q='+lat+','+lon+'('+name+')">' +
+                      roundNumber(lat, 5) + ', ' + roundNumber(lon, 5) +'</a>';
+    } else {
+        coords_text = '<a href="https://www.google.com/maps/search/?api=1&query='+lat+','+lon+'" target="_blank" rel="noopener noreferrer">' +
+            roundNumber(lat, 5) + ', ' + roundNumber(lon, 5) +'</a>';
+    }
+
+    return coords_text;
+};
+
 // runs every second
 var updateTime = function(date) {
     // update timebox
@@ -552,12 +571,6 @@ $(window).ready(function() {
     $("body").on("mouseup", function () {
         $("#main").removeClass("drag");
     });
-
-    // confirm dialog when launchnig a native map app with coordinates
-    //$('#main').on('click', '#launch_mapapp', function() {
-    //    var answer = confirm("Launch your maps app?");
-    //    return answer;
-    //});
 
     // follow vehicle by clicking on data
     $('#main').on('click', '.row .data', function() {

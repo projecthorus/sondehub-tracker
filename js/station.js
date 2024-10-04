@@ -179,7 +179,7 @@ function drawHistorical (data, station) {
         html = "<div style='line-height:16px;position:relative;'>";
         html += "<div>"+serial+" <span style=''>("+time+")</span></div>";
         html += "<hr style='margin:5px 0px'>";
-        html += "<div><b>Last Position:&nbsp;</b>"+roundNumber(landing.lat, 5) + ',&nbsp;' + roundNumber(landing.lon, 5)+"</div>";
+        html += "<div><b>Last Position:&nbsp;</b>"+format_coordinates(landing.lat, landing.lon, serial)+"</div>";
 
         var imp = offline.get('opt_imperial');
         var text_alt = Number((imp) ? Math.floor(3.2808399 * parseInt(landing.alt)) : parseInt(landing.alt)).toLocaleString("us");

@@ -2255,8 +2255,8 @@ function set_polyline_visibility(vcallsign, val) {
             map.addLayer(vehicle.prediction_launch_polyline[0]);
             map.addLayer(vehicle.prediction_launch_polyline[1]);
         } else {
-            map.removeLayer(vehicle.prediction_launch_polyline)[0];
-            map.removeLayer(vehicle.prediction_launch_polyline)[1];
+            map.removeLayer(vehicle.prediction_launch_polyline[0]);
+            map.removeLayer(vehicle.prediction_launch_polyline[1]);
         }
     }
     if(vehicle.prediction_target) {
@@ -2279,7 +2279,7 @@ function set_polyline_visibility(vcallsign, val) {
 
 function removePrediction(vcallsign) {
   if(vehicles[vcallsign].prediction_polyline) {
-    map.removeLayer(vehicles[vcallsign].prediction_polyline[1]);
+    map.removeLayer(vehicles[vcallsign].prediction_polyline[0]);
     map.removeLayer(vehicles[vcallsign].prediction_polyline[1]);
     vehicles[vcallsign].prediction_polyline = null;
   }
@@ -3395,11 +3395,11 @@ function addPosition(position) {
         vehicle_info.kill = function() {
             $(".vehicle"+vehicle_info.uuid).remove();
             potentialobjects = [marker, marker_shadow, landing_marker, horizon_circle, horizon_circle_title, subhorizon_circle, subhorizon_circle_title, polyline];
-            if (map.hasLayer(vehicle_info["prediction_polyline"][0])) { 
+            if (vehicle_info["prediction_polyline"] && map.hasLayer(vehicle_info["prediction_polyline"][0])) { 
                 map.removeLayer(vehicle_info["prediction_polyline"][0]);
                 map.removeLayer(vehicle_info["prediction_polyline"][1]);
             }
-            if (map.hasLayer(vehicle_info["prediction_launch_polyline"][0])) { 
+            if (vehicle_info["prediction_launch_polyline"] && map.hasLayer(vehicle_info["prediction_launch_polyline"][0])) { 
                 map.removeLayer(vehicle_info["prediction_launch_polyline"][0]);
                 map.removeLayer(vehicle_info["prediction_launch_polyline"][1]);
             }

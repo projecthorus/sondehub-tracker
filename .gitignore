@@ -1,9 +1,7 @@
 *.swp
 *.pyc
 *.log
-js/mobile.js
-js/init_plot.js
-js/version.json
-css/mobile.css
+/index.html
+/js/version.json
 cache.manifest
 tiles/

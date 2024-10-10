@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-RUN apk add --no-cache python3 openjdk11 sed git
+RUN apk add --no-cache python3 sed git
 
 WORKDIR /app
 ADD . .

@@ -207,7 +207,9 @@ function trackerInit() {
     if(is_mobile || wvar.enabled) $(".nav .wvar").hide();
 
     if(!is_mobile) {
-        $.getScript("js/init_plot.js", function() { checkSize(); if(!map) load(); });
+        $.getScript("js/_jquery.flot.js", function() {
+            $.getScript("js/plot_config.js", function() { checkSize(); if(!map) load(); });
+        });
         if(wvar.graph) $('#telemetry_graph').attr('style','');
 
         return;
@@ -485,8 +487,6 @@ var updateTime = function(date) {
     }
 };
 
-const version = "{VER}";
-
 $(window).ready(function() {
     // refresh timebox
     setInterval(function() {
@@ -494,8 +494,8 @@ $(window).ready(function() {
     }, 1000);
 
     // Update Tracker version info
-    $('#build_version').text(version);
-    $('#build_date').text("{BUILD_DATE}");
+    $('#build_version').text(document.body.dataset.version);
+    $('#build_date').text(document.body.dataset.buildDate);
 
     // resize elements if needed
     checkSize();
@@ -1033,7 +1033,7 @@ function check_version(){
     fetch(updateRequest)
         .then(function(response){ return response.json()})
         .then(function(response){
-            if (response['version'] != version) {
+            if (response['version'] != document.body.dataset.version) {
                 window.clearInterval(update_check)
                 reload_timer = window.setTimeout(update_site, response['refresh']*1000)
                 reload_end_time = new Date().getTime() +response['refresh']*1000

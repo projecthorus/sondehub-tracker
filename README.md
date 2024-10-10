@@ -36,8 +36,6 @@ Pull requests are welcome.
 
 ## Installation
 
-Requirements: Java
-
     $ git clone https://github.com/projecthorus/sondehub-tracker.git
     $ ./build.sh
     $ python serve.py

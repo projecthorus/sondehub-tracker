@@ -858,20 +858,30 @@ function clean_refresh(text, force, history_step) {
 }
 
 function load() {
+    coords = offline.get("mc");
+    if (coords == null) {
+        coords = [53.467511,-2.233894];
+    }
+
+    zoomLevel = offline.get("mz");
+    if (zoomLevel == null) {
+        zoomLevel = 5;
+    }
+
     //initialize map object
     map = new L.map(document.getElementById('map'), {
-        zoom: 5,
+        zoom: zoomLevel,
         zoomControl: false,
         zoomAnimationThreshold: 0,
         zoomAnimation: true,
         markerZoomAnimation: false,
-        center: [53.467511,-2.233894],
+        center: coords,
         layers: baseMaps[selectedLayer],
         worldCopyJump: true,
         preferCanvas: true,
     });
 
-    map.setView([53.467511,-2.233894], 5, {animate: false});
+    map.setView(coords, zoomLevel, {animate: false});
 
     // fullscreen button
     map.addControl(new L.Control.Fullscreen({ position: 'bottomleft' }));
@@ -1012,6 +1022,10 @@ function load() {
         lhash_update();
         sidebar_update();
         sub_to_nearby_sondes();
+
+        var latlng = map.getCenter();
+        offline.set("mc", [roundNumber(latlng.lat, 5), roundNumber(latlng.lng, 5)]);
+        offline.set("mz", map.getZoom());
     });
 
     map.on('baselayerchange', function (e) {

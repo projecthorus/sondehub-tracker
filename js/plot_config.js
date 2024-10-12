@@ -77,9 +77,9 @@ function updateLegend(pos) {
 
         if(outside && pij !== undefined) {
             if(!polyMarker) {
-                try {polyMarker = new L.Marker(vehicles[follow_vehicle].prediction_polyline.getLatLngs()[pij]).addTo(map);} catch (e) {};
+                try {polyMarker = new L.Marker(vehicles[follow_vehicle].prediction_polyline[0].getLatLngs()[pij]).addTo(map);} catch (e) {};
             } else {
-                try {polyMarker.setLatLng(vehicles[follow_vehicle].prediction_polyline.getLatLngs()[pij]);} catch (e) {};
+                try {polyMarker.setLatLng(vehicles[follow_vehicle].prediction_polyline[0].getLatLngs()[pij]);} catch (e) {};
             }
             
         }

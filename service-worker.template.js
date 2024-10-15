@@ -1,6 +1,6 @@
 self.addEventListener('install', function(event) {
     event.waitUntil(
-        caches.open(document.body.dataset.version).then(function(cache) {
+        caches.open("{VER}").then(function(cache) {
             return cache.addAll(
                 [
                     '/css/base.css',

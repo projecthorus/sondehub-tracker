@@ -2,6 +2,7 @@
 *.pyc
 *.log
 /index.html
+/service-worker.js
 /js/version.json
 cache.manifest
 tiles/

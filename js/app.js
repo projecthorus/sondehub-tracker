@@ -493,10 +493,6 @@ $(window).ready(function() {
         updateTime(new Date());
     }, 1000);
 
-    // Update Tracker version info
-    $('#build_version').text(document.body.dataset.version);
-    $('#build_date').text(document.body.dataset.buildDate);
-
     // resize elements if needed
     checkSize();
 

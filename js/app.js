@@ -374,7 +374,7 @@ var positionUpdateHandle = function(position) {
         }
         else { return; }
 
-        // add/update marker on the map (tracker.js)
+        // add/update marker on the map (sondehub.js)
         updateCurrentPosition(lat, lon);
 
         // round the coordinates

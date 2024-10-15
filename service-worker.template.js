@@ -21,7 +21,7 @@ self.addEventListener('install', function(event) {
                     '/js/jquery-1.12.4-min.js',
                     '/js/iscroll.js',
                     '/js/chasecar.lib.js',
-                    '/js/tracker.js',
+                    '/js/sondehub.js',
                     '/js/app.js',
                     '/js/colour-map.js',
                     '/js/xdata.js',

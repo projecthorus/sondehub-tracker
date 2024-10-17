@@ -217,7 +217,7 @@ function trackerInit() {
     if(!map) load();
 }
 
-// if for some reason, applicationCache is not working, load the app after a 3s timeout
+// load the app after a 3s timeout
 var initTimer = setTimeout(trackerInit, 3000);
 
 var listScroll;

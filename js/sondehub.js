@@ -2328,7 +2328,8 @@ function drawLaunchPrediction(vcallsign) {
         mapInfoBox_handle_prediction_path(e);
     });
 
-    vehicle.prediction_launch_polyline.path_length = path_length;
+    vehicle.prediction_launch_polyline[0].path_length = path_length;
+    vehicle.prediction_launch_polyline[1].path_length = path_length;
 }
 
 // Takes in an SVG for a balloon, parachute, target, car, etc and sets a dynamic-color
@@ -2407,7 +2408,8 @@ function redrawPrediction(vcallsign) {
         })
     }
 
-    vehicle.prediction_polyline.path_length = path_length;
+    vehicle.prediction_polyline[0].path_length = path_length;
+    vehicle.prediction_polyline[1].path_length = path_length;
 
     var image_src;
 

@@ -2156,7 +2156,7 @@ function skewTdraw (callsign) {
     
             // Extract temperature datapoint
             if (entry.hasOwnProperty('temp')){
-                if(parseFloat(entry.temp) > -270.0){
+                if(parseFloat(entry.temp) > -250.0){
                     _temp = parseFloat(entry.temp);
                 } else{
                     idx = idx + 1;
@@ -2169,15 +2169,15 @@ function skewTdraw (callsign) {
             }
 
     
+            _dewp = null;
+
             // Try and extract RH datapoint
             if (entry.hasOwnProperty('humidity')){
                 if(parseFloat(entry.humidity) >= 0.0){
                     _rh = parseFloat(entry.humidity);
                     // Calculate the dewpoint
                     _dewp = (243.04 * (Math.log(_rh / 100) + ((17.625 * _temp) / (243.04 + _temp))) / (17.625 - Math.log(_rh / 100) - ((17.625 * _temp) / (243.04 + _temp))));
-                } else {
-                    _dewp = -1000.0;
-                }
+                } 
             }
     
             // Calculate movement
@@ -2205,7 +2205,11 @@ function skewTdraw (callsign) {
                 break;
             }
     
-            _new_skewt_data = {"press": _pressure, "hght": _new_pos.alt, "temp": _temp, "dwpt": _dewp, "wdir": _wdir, "wspd": _wspd};
+            _new_skewt_data = {"press": _pressure, "hght": _new_pos.alt, "temp": _temp, "wdir": _wdir, "wspd": _wspd};
+            
+            if (_dewp != null){
+                _new_skewt_data.dwpt = _dewp
+            }
     
             skewt_data.push(_new_skewt_data);
     

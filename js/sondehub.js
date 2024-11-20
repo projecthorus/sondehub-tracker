@@ -74,7 +74,7 @@ var manual_pan = false;
 
 var car_index = 0;
 var car_colors = ["#a6cee3", "#1f78b4", "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", "#cab2d6"];
-var balloon_colors = ["#d95f02", "#7570b3", "#e7298a", "#e6ab02", "#a6761d", "#666666", "blue", "lime", "magenta", "#ffb300", "rebeccapurple"];
+var balloon_colors = ["#d95f02", "#7570b3", "#e7298a", "#e6ab02", "#a6761d", "#666666", "blue", "magenta", "#ffb300", "rebeccapurple"];
 
 var nyan_color_index = 0;
 var nyan_colors = ['nyan', 'nyan-coin', 'nyan-mon', 'nyan-pirate', 'nyan-cool', 'nyan-tothemax', 'nyan-pumpkin', 'nyan-afro', 'nyan-coin', 'nyan-mummy'];
@@ -1790,19 +1790,21 @@ function updateVehicleInfo(vcallsign, newPosition) {
         $('.landscape').append('<div id="lv'+vehicle.uuid+'" class="row vehicle'+vehicle.uuid+'" data-vcallsign="'+vcallsign+'"></div>');
     }
 
-    if (offline.get('opt_selective_sidebar')) {
-        if (map.getBounds().contains(vehicles[vcallsign].marker.getLatLng())) {
-            document.getElementById("pv"+vehicle.uuid).style.display = "block";
-            document.getElementById("lv"+vehicle.uuid).style.display = "block";
-        } else {
-            document.getElementById("pv"+vehicle.uuid).style.display = "none";
-            document.getElementById("lv"+vehicle.uuid).style.display = "none";
-        }
-    }
 
   } else if(elm.attr('data-vcallsign') === undefined) {
     elm.attr('data-vcallsign', vcallsign);
   }
+
+  if (offline.get('opt_selective_sidebar')) {
+    if (map.getBounds().contains(vehicles[vcallsign].marker.getLatLng())) {
+        document.getElementById("pv"+vehicle.uuid).style.display = "block";
+        document.getElementById("lv"+vehicle.uuid).style.display = "block";
+    } else {
+        document.getElementById("pv"+vehicle.uuid).style.display = "none";
+        document.getElementById("lv"+vehicle.uuid).style.display = "none";
+    }
+}
+
 
   // decides how to display the horizonal speed
   var imp = offline.get('opt_imperial'), hrate_text;

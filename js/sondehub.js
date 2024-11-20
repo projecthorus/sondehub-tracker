@@ -3050,6 +3050,9 @@ function addPosition(position) {
         var horizon_circle_title = null;
         var subhorizon_circle_title = null;
         if(vcallsign.search(/(chase)/i) != -1) {
+            if (offline.get("opt_hide_chase") ){
+                return
+            }
             vehicle_type = "car";
             color_index = car_index++ % car_colors.length;
             image_src = recolorSVG(host_url + markers_url + "car.svg", car_colors[color_index]);
@@ -4394,6 +4397,7 @@ function updateCurrentPosition(lat, lon) {
 function updateReceiverMarker(receiver) {
   var latlng = new L.LatLng(receiver.lat, receiver.lon);
 
+
   // init a marker if the receiver doesn't already have one
   if(!receiver.marker) {
 
@@ -4430,8 +4434,10 @@ function updateReceiverMarker(receiver) {
     }
     
     receiver.marker.bindPopup(receiver.infobox);
-
-    receiverCanvas.addLayer(receiver.marker);
+    if (!offline.get("opt_hide_receivers") ){
+        receiverCanvas.addLayer(receiver.marker);
+    }
+   
   } else {
     receiver.marker.setLatLng(latlng);
     receiver.infobox = new L.popup({ autoClose: false, closeOnClick: false }).setContent(receiver.description);
@@ -4605,7 +4611,7 @@ function updateReceivers(r, single) {
         i = 0;
         for(; i < receivers.length;) {
             var e = receivers[i];
-            if(e.fresh) {
+            if(e.fresh && !offline.get("opt_hide_receivers")) {
                 e.fresh = false;
                 i++;
             }

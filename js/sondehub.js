@@ -4289,7 +4289,9 @@ function singleRecovery(serial) {
         data: datastr,
         dataType: "json",
         success: function(response, textStatus) {
-            updateRecoveries(response);
+            if(!offline.get('opt_hide_recoveries')) {
+                updateRecoveries(response, true);
+            }
         }
     });
 
@@ -4732,8 +4734,7 @@ function updateRecoveryMarker(recovery) {
     }
   }
   
-  function updateRecoveries(r) {
-
+  function updateRecoveries(r, single=false) {
       if(!r) return;
       ls_recoveries = true;
 
@@ -4742,41 +4743,38 @@ function updateRecoveryMarker(recovery) {
   
       var i = 0, ii = r.length;
       for(; i < ii; i++) {
-          var date = Date.parse(r[i].datetime);
-          if (((dateNow - date) / 86400000) < 3) {
-            var lat = parseFloat(r[i].lat);
-            var lon = parseFloat(r[i].lon);
-    
-            if(lat < -90 || lat > 90 || lon < -180 || lon > 180) continue;
-    
-            var r_index = $.inArray(r[i].serial, recovery_names);
-    
-            if(r_index == -1) {
-                recovery_names.push(r[i].serial);
-                r_index = recovery_names.length - 1;
-                recoveries[r_index] = {marker: null, infobox: null};
-            }
-    
-            var recovery = recoveries[r_index];
-            recovery.serial = r[i].serial;
-            recovery.lat = lat;
-            recovery.lon = lon;
-            recovery.recovered_by = r[i].recovered_by;
-            recovery.alt = parseFloat(r[i].alt);
-            recovery.recovered = r[i].recovered;
-            recovery.description = r[i].description;
-            recovery.datetime = r[i].datetime;
-            recovery.fresh = true;
-    
-            updateRecoveryMarker(recovery);
-        }
+          var lat = parseFloat(r[i].lat);
+          var lon = parseFloat(r[i].lon);
+  
+          if(lat < -90 || lat > 90 || lon < -180 || lon > 180) continue;
+  
+          var r_index = $.inArray(r[i].serial, recovery_names);
+  
+          if(r_index == -1) {
+              recovery_names.push(r[i].serial);
+              r_index = recovery_names.length - 1;
+              recoveries[r_index] = {marker: null, infobox: null};
+          }
+  
+          var recovery = recoveries[r_index];
+          recovery.serial = r[i].serial;
+          recovery.lat = lat;
+          recovery.lon = lon;
+          recovery.recovered_by = r[i].recovered_by;
+          recovery.alt = parseFloat(r[i].alt);
+          recovery.recovered = r[i].recovered;
+          recovery.description = r[i].description;
+          recovery.datetime = r[i].datetime;
+          recovery.fresh = true;
+          updateRecoveryMarker(recovery);
+      
       }
   
       // clear old recovery markers
       i = 0;
       for(; i < recoveries.length;) {
           var e = recoveries[i];
-          if(e.fresh) {
+          if(e.fresh || single) {
               e.fresh = false;
               i++;
           }

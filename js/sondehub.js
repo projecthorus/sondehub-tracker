@@ -2455,13 +2455,25 @@ function redrawPrediction(vcallsign) {
         vehicle.prediction_target.pred_type = "<b>Prediction Type:</b> Float\n";
     } else {
         if(vehicle.prediction.descending == 1){
-            vehicle.prediction_target.pred_type = "<b>Prediction Type:</b> Standard \n" + 
-                "<b>Descent Rate:</b> " + vehicle.prediction.descent_rate.toFixed(1) + " m/s \n";
+            vehicle.prediction_target.pred_type = "<b>Prediction Type:</b> Standard \n"
+                if (offline.get('opt_imperial')){
+                    vehicle.prediction_target.pred_type = vehicle.prediction_target.pred_type + "<b>Descent Rate:</b> " + (vehicle.prediction.descent_rate * 3.2808399).toFixed(1) + " ft/s \n";
+                } else {
+                    vehicle.prediction_target.pred_type = vehicle.prediction_target.pred_type + "<b>Descent Rate:</b> " + vehicle.prediction.descent_rate.toFixed(1) + " m/s \n";
+                }
+                
         } else {
-            vehicle.prediction_target.pred_type = "<b>Prediction Type:</b> Standard \n" + 
-                "<b>Ascent Rate:</b> " + vehicle.prediction.ascent_rate.toFixed(1) + " m/s \n" + 
-                "<b>Burst Altitude:</b> " + vehicle.prediction.burst_altitude.toFixed(0) + " m\n" + 
-                "<b>Descent Rate:</b> " + vehicle.prediction.descent_rate.toFixed(1) + " m/s \n";
+            if (offline.get('opt_imperial')){
+                vehicle.prediction_target.pred_type = "<b>Prediction Type:</b> Standard \n" + 
+                    "<b>Ascent Rate:</b> " + vehicle.prediction.ascent_rate.toFixed(1) + " f/s \n" + 
+                    "<b>Burst Altitude:</b> " + vehicle.prediction.burst_altitude.toFixed(0) + " feet\n" + 
+                    "<b>Descent Rate:</b> " + vehicle.prediction.descent_rate.toFixed(1) + " fs/ \n";
+            } else {
+                vehicle.prediction_target.pred_type = "<b>Prediction Type:</b> Standard \n" + 
+                    "<b>Ascent Rate:</b> " + (vehicle.prediction.ascent_rate * 3.2808399).toFixed(1) + " m/s \n" + 
+                    "<b>Burst Altitude:</b> " + (vehicle.prediction.burst_altitude * 3.2808399).toFixed(0) + " m\n" + 
+                    "<b>Descent Rate:</b> " + (vehicle.prediction.descent_rate * 3.2808399).toFixed(1) + " m/s \n";
+            }
         }
     }
     
@@ -2480,6 +2492,7 @@ function redrawPrediction(vcallsign) {
                 zIndexOffset: Z_SHADOW,
                 icon: burstIcon,
             }).addTo(map);
+            vehicle.prediction_burst.pred_type = "<b>Burst</b>\n";
             vehicle.prediction_burst.on('click', function (e) {
                 mapInfoBox_handle_prediction(e);
             });
@@ -2489,13 +2502,24 @@ function redrawPrediction(vcallsign) {
             vehicle.prediction_burst.pred_type = "<b>Prediction Type:</b> Float\n";
         } else {
             if(vehicle.prediction.descending == 1){
-                vehicle.prediction_burst.pred_type = "<b>Prediction Type:</b> Standard \n" + 
-                    "<b>Descent Rate:</b> " + vehicle.prediction.descent_rate.toFixed(1) + " m/s \n";
+                vehicle.prediction_burst.pred_type = "<b>Prediction Type:</b> Standard \n"
+                if (offline.get('opt_imperial')){
+                    vehicle.prediction_burst.pred_type = vehicle.prediction_burst.pred_type + "<b>Descent Rate:</b> " + (vehicle.prediction.descent_rate * 3.2808399).toFixed(1) + " ft/s \n";
+                } else {
+                    vehicle.prediction_burst.pred_type = vehicle.prediction_burst.pred_type + "<b>Descent Rate:</b> " + vehicle.prediction.descent_rate.toFixed(1) + " m/s \n";
+                }
             } else {
-                vehicle.prediction_burst.pred_type = "<b>Prediction Type:</b> Standard \n" + 
-                    "<b>Ascent Rate:</b> " + vehicle.prediction.ascent_rate.toFixed(1) + " m/s \n" + 
-                    "<b>Burst Altitude:</b> " + vehicle.prediction.burst_altitude.toFixed(0) + " m\n" + 
-                    "<b>Descent Rate:</b> " + vehicle.prediction.descent_rate.toFixed(1) + " m/s \n";
+                if (offline.get('opt_imperial')){
+                    vehicle.prediction_burst.pred_type = "<b>Prediction Type:</b> Standard \n" + 
+                        "<b>Ascent Rate:</b> " + vehicle.prediction_burst.ascent_rate.toFixed(1) + " f/s \n" + 
+                        "<b>Burst Altitude:</b> " + vehicle.prediction_burst.burst_altitude.toFixed(0) + " feet\n" + 
+                        "<b>Descent Rate:</b> " + vehicle.prediction_burst.descent_rate.toFixed(1) + " fs/ \n";
+                } else {
+                    vehicle.prediction_burst.pred_type = "<b>Prediction Type:</b> Standard \n" + 
+                        "<b>Ascent Rate:</b> " + (vehicle.prediction.ascent_rate * 3.2808399).toFixed(1) + " m/s \n" + 
+                        "<b>Burst Altitude:</b> " + (vehicle.prediction.burst_altitude * 3.2808399).toFixed(0) + " m\n" + 
+                        "<b>Descent Rate:</b> " + (vehicle.prediction.descent_rate * 3.2808399).toFixed(1) + " m/s \n";
+                }
             }
         }
     } else {

@@ -41,11 +41,12 @@ self.addEventListener('install', function(event) {
                     '/img/markers/shadow.png',
                     '/img/markers/balloon-pop.png',
                     '/img/hab-spinner.gif',
-                    '/img/sondehub_logo.png',
+                    '/img/sondehub_au.png',
                     '/favicon.ico',
                     '/font/HabitatFont.woff',
                     '/font/Roboto-regular.woff',
-                    '/index.html'
+                    '/index.html',
+                    '/'
                 ]
             );
         })

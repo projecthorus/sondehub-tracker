@@ -2493,7 +2493,7 @@ function redrawPrediction(vcallsign) {
             vehicle.prediction_burst = new L.Marker(latlng_burst, {
                 zIndexOffset: Z_SHADOW,
                 icon: burstIcon,
-            }).addTo(map);
+            });
             vehicle.prediction_burst.pred_type = "<b>Burst</b>\n";
             vehicle.prediction_burst.on('click', function (e) {
                 mapInfoBox_handle_prediction(e);

@@ -868,6 +868,13 @@ function load() {
         zoomLevel = 5;
     }
 
+    // load location from browser position if possible
+    if (currentPosition){
+      console.log(currentPosition)
+      coords = [currentPosition.lat, currentPosition.lon]
+      zoomLevel = 9;
+    }
+
     //initialize map object
     map = new L.map(document.getElementById('map'), {
         zoom: zoomLevel,

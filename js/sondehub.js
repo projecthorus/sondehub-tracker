@@ -3273,7 +3273,8 @@ function addPosition(position) {
 
             horizon_circle_title = new L.Marker(point, {
                 icon: horizon_circle_title_icon,
-                interactive: false,
+                interactive: true,
+                title: "Line-of-right (radio) horizon of the payload"
             });
 
             if (offline.get("opt_hide_horizon")) {
@@ -3305,7 +3306,8 @@ function addPosition(position) {
 
             subhorizon_circle_title = new L.Marker(point, {
                 icon: subhorizon_circle_title_icon,
-                interactive: false,
+                interactive: true,
+                title: "Payload is greater than 5 degrees above the horizon within this circle, which indicates it should be fairly easily receivable."
             });
 
             if (offline.get("opt_hide_horizon")) {

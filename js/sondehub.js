@@ -4159,12 +4159,17 @@ function refreshSingleNew(serial) {
     ajax_inprogress_single_new = true;
   
     var data_str = "duration=3d&serial=" + serial;
-  
+
+    var xhr = new XMLHttpRequest();
+
     ajax_positions_single_new = $.ajax({
       type: "GET",
       url: newdata_url,
       data: data_str,
       dataType: "json",
+      xhr: function() {
+        return xhr;
+      },
       success: function(data, textStatus) {
         response = formatData(data, false);
         update(response, true);
@@ -4175,6 +4180,23 @@ function refreshSingleNew(serial) {
       complete: function(request, textStatus) {
           clearTimeout(periodical_focus_new);
           ajax_inprogress_single_new = false;
+          // check if we have been redirected for history - if not we can also fetch that if it exists
+          console.log("completed first call")
+          console.log(xhr.responseURL)
+          if (xhr.responseURL.includes(newdata_url)){
+            console.log("getting extra history")
+            $.ajax({
+                type: "GET",
+                url: "https://sondehub-history.s3.amazonaws.com/serial/"+ encodeURIComponent(serial) +".json.gz",
+                dataType: "json",
+                success: function(data, textStatus) {
+                  response = formatData(data, false);
+                  update(response, true);
+                },
+                error: function() {
+                }
+            })
+          }
       }
     });
 }

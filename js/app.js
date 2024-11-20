@@ -1030,6 +1030,12 @@ function check_version(){
         .then(function(response){ return response.json()})
         .then(function(response){
             if (response['version'] != document.body.dataset.version) {
+                
+                caches.keys().then(function(names) { // wipe cache for fresh reload
+                    for (let name of names)
+                        caches.delete(name);
+                });
+
                 window.clearInterval(update_check)
                 reload_timer = window.setTimeout(update_site, response['refresh']*1000)
                 reload_end_time = new Date().getTime() +response['refresh']*1000

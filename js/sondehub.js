@@ -1240,6 +1240,7 @@ function panToRecovery(rcallsign) {
     //if mobile close panel
     if (is_mobile) {
         $('.flatpage, #homebox').hide();
+        lhash_update(true);
     }
     for (let i = 0; i < recoveries.length; i++) {
         if (recoveries[i].hasOwnProperty('serial')) {
@@ -2039,6 +2040,7 @@ function skewTdelete () {
     $('#deleteSkewt').hide();
     $("#skewtSerial").text("Select a Radiosonde from the list and click 'SkewT' to plot. Note that not all radiosonde types are supported.");
     box.hide();
+    lhash_update(true);
     //$('.skewt').hide();
     $("#skewt-plot").empty();
     checkSize();
@@ -2068,6 +2070,7 @@ function skewTdraw (callsign) {
         $('.flatpage, #homebox').hide();
         $('.skewt').show();
         box.show().scrollTop(0);
+        lhash_update(true);
         checkSize();
     };
 
@@ -2236,6 +2239,7 @@ function skewTdraw (callsign) {
                 $('.flatpage, #homebox').hide();
                 $('.skewt').show();
                 box.show().scrollTop(0);
+                lhash_update(true);
                 checkSize();
             };
 

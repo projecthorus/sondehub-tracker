@@ -73,7 +73,7 @@ var wvar = {
     nyan: false,
     nena: false,
     site: 0,
-    box: "aboutbox"
+    box: ""
 };
 
 

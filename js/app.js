@@ -43,6 +43,9 @@ function lhash_update(history_step) {
     if(wvar.nena) {
         hash += "&nena=1";
     }
+    if(wvar.box) { // We just need something to change so we can trigger the back button correctly
+        hash += "&box="+wvar.box;
+    }
 
     hash = encodeURI(hash);
     // set state
@@ -70,6 +73,7 @@ var wvar = {
     nyan: false,
     nena: false,
     site: 0,
+    box: "aboutbox"
 };
 
 
@@ -93,6 +97,7 @@ function load_hash(no_refresh) {
         query: "",
         nyan: false,
         nena: false,
+        box: ""
     };
 
     parms.forEach(function(v) {
@@ -141,6 +146,9 @@ function load_hash(no_refresh) {
                 focusID = v;
                 gotoSite(v);
                 break;
+            case "box":
+                def[k] = v;
+                break;
         }
     });
 
@@ -148,6 +156,19 @@ function load_hash(no_refresh) {
     ['mode','query','nyan','nena'].forEach(function(k) {
         if(wvar[k] != def[k]) refresh = true;
     });
+
+    if (wvar["box"] != def["box"]){
+        console.log("box change detected")
+        if(!def["box"]){
+            $(".flatpage").hide()
+        } else {
+            $(".flatpage").hide()
+            $("#"+def["box"]).show()
+        }
+        checkSize();
+        wvar["box"]= def["box"];
+        
+    }
 
     $.extend(true, wvar, def);
 
@@ -642,6 +663,14 @@ $(window).ready(function() {
                 default: pretty_name = name[0].toUpperCase() + name.slice(1);
             }
         }
+        var visible_box = $(".flatpage:visible");
+        if (visible_box.length > 0){
+            wvar.box = visible_box[0].id
+            console.log(wvar.box)
+        } else {
+            wvar.box = null
+        }
+        lhash_update(true);
         checkSize();
     });
 

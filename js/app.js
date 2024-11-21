@@ -222,6 +222,7 @@ function trackerInit() {
     $('#loading,#settingsbox,#aboutbox,#chasebox').hide(); // welcome screen
     $('header,#main').show(); // interface elements
     checkSize();
+    lhash_update(true);
 
     if(map) return;
 

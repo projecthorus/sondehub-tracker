@@ -816,7 +816,6 @@ function clean_refresh(text, force, history_step) {
 
     wvar.mode = text;
     document.getElementById("timeperiod").value = text;
-    document.getElementById("timeperiod").disabled = true;
 
     position_id = 0;
 
@@ -1088,7 +1087,7 @@ function load() {
             lhash_update();
         });
 
-        startAjax();
+        //startAjax();
         liveData();
     };
 
@@ -2366,15 +2365,20 @@ function drawLaunchPrediction(vcallsign) {
 // Takes in an SVG for a balloon, parachute, target, car, etc and sets a dynamic-color
 // variable which that SVG can use to recolor any relevant elements.
 // See balloon.svg, target.svg, etc for examples
+var svg_cache = {}
 function recolorSVG(svg_path, color) {
+  if (svg_cache[svg_path] == undefined){
     const xhr = new XMLHttpRequest();
     xhr.open('GET', svg_path, false);
     xhr.send();
 
     const parser = new DOMParser();
     const svgDocument = parser.parseFromString(xhr.responseText, 'image/svg+xml');
-    svgDocument.documentElement.style.setProperty("--dynamic-color", color);
-    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgDocument.documentElement.outerHTML);
+    svg_cache[svg_path] = svgDocument;
+  } 
+    const svgDoc = svg_cache[svg_path]
+    svgDoc.documentElement.style.setProperty("--dynamic-color", color);
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgDoc.documentElement.outerHTML);
   }
 
 function redrawPrediction(vcallsign) {
@@ -3943,24 +3947,26 @@ function refresh() {
     data: data_str,
     dataType: "json",
     success: function(data, textStatus) {
-        if (wvar.query != null && JSON.stringify(data).indexOf(wvar.query) == -1) {
-            refreshSingle(wvar.query);
-        } else {
-            response = formatData(data, false);
-            update(response, true);   
-            $("#stTimer").attr("data-timestamp", response.fetch_timestamp);
+      var checkLoadedTimer = setInterval(() => {
+        if (map){
+          if (wvar.query != null && JSON.stringify(data).indexOf(wvar.query) == -1) {
+              refreshSingle(wvar.query);
+          } else {
+              response = formatData(data, false);
+              update(response, true);   
+              $("#stTimer").attr("data-timestamp", response.fetch_timestamp);
+          }
+          $("#stText").text("");
+          clearInterval(checkLoadedTimer)
         }
-        $("#stText").text("");
+      }, 50)
     },
     error: function() {
         $("#stText").text("poll error |");
-        document.getElementById("timeperiod").disabled = false;
         ajax_inprogress = false;
     },
     complete: function(request, textStatus) {
-        if (!ajax_inprogress_single) {
-            document.getElementById("timeperiod").disabled = false;
-        }
+
         clientActive = true;
         //console.log("WebSockets - Resuming Websockets updates after poll.")
         clearTimeout(periodical);
@@ -3968,6 +3974,7 @@ function refresh() {
     }
   });
 }
+
 
 live_data_buffer = {positions:{position:[]}}
 function liveData() {
@@ -4112,7 +4119,10 @@ function liveData() {
 
 // Interval to read in the live data buffer and update the page.
 setInterval(function(){
-    update(live_data_buffer);
+    if(map){
+      update(live_data_buffer);
+    }
+    
     live_data_buffer.positions.position=[];
 }, 500)
 
@@ -4137,20 +4147,23 @@ function refreshSingle(serial) {
       url: data_url,
       dataType: "json",
       success: function(data, textStatus) {
-        response = formatData(data, false);
-        update(response, true);
-        singleRecovery(serial);
-        $("#stText").text("");
+        var checkLoadedTimer = setInterval(() => {
+          if (map){
+            response = formatData(data, false);
+            update(response, true);
+            singleRecovery(serial);
+            $("#stText").text("");
+            clearInterval(checkLoadedTimer);
+          }
+        }, 50)
       },
       error: function() {
         $("#stText").text("error |");
         ajax_inprogress_single = false;
-        document.getElementById("timeperiod").disabled = false;
       },
       complete: function(request, textStatus) {
           clearTimeout(periodical_focus);
           ajax_inprogress_single = false;
-          document.getElementById("timeperiod").disabled = false;
       }
     });
 }
@@ -4249,7 +4262,12 @@ function refreshReceivers() {
             data: data_str,
             dataType: "json",
             success: function(response, textStatus) {
-                updateReceivers(response, single=false);
+              var checkLoadedTimer = setInterval(() => {
+                if (map){
+                  updateReceivers(response, single=false);
+                  clearInterval(checkLoadedTimer);
+                }
+              }, 50);
             },
             complete: function(request, textStatus) {
                 if (!offline.get("opt_hide_chase")) {
@@ -4317,10 +4335,15 @@ function refreshRecoveries() {
         url: recovered_sondes_url,
         dataType: "json",
         success: function(response, textStatus) {
-            updateRecoveryPane(response);
-            if(!offline.get('opt_hide_recoveries')) {
-                updateRecoveries(response);
+          var checkLoadedTimer = setInterval(() => {
+            if (map){
+              updateRecoveryPane(response);
+              if(!offline.get('opt_hide_recoveries')) {
+                  updateRecoveries(response);
+              }
+              clearInterval(checkLoadedTimer);
             }
+          }, 50);
         },
         error: function() {
             updateRecoveryPane([]);
@@ -4347,53 +4370,12 @@ function refreshRecoveryStats() {
 
 var ajax_predictions = null;
 
-// function refreshPredictions() {
-//     if(ajax_inprogress) {
-//       clearTimeout(periodical_predictions);
-//       periodical_predictions = setTimeout(refreshPredictions, 1000);
-//       return;
-//     }
-
-//     ajax_predictions = $.ajax({
-//         type: "GET",
-//         url: predictions_url + encodeURIComponent(wvar.query),
-//         data: "",
-//         dataType: "json",
-//         success: function(response, textStatus) {
-//             updatePredictions(response);
-//         },
-//         error: function() {
-//         },
-//         complete: function(request, textStatus) {
-//             clearTimeout(periodical_predictions);
-//             periodical_predictions = setTimeout(refreshPredictions, 60 * 1000);
-//         }
-//     });
-
-//     var data_str = "duration=" + wvar.mode + "&vehicles=" + encodeURIComponent(wvar.query);
-
-//     ajax_predictions = $.ajax({
-//         type: "GET",
-//         url: launch_predictions_url,
-//         data: data_str,
-//         dataType: "json",
-//         success: function(response, textStatus) {
-//             updateLaunchPredictions(response);
-//         },
-//         error: function() {
-//         },
-//         complete: function(request, textStatus) {
-//         }
-//     });
-// }
 
 var periodical, periodical_focus, periodical_focus_new, periodical_receivers, periodical_listeners, periodical_recoveries;
 var periodical_predictions = null;
 var timer_seconds = 5;
 
 function startAjax() {
-
-    document.getElementById("timeperiod").disabled = true;
 
     // prevent insane clicks to start numerous requests
     clearTimeout(periodical);

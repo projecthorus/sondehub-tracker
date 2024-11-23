@@ -158,7 +158,6 @@ function load_hash(no_refresh) {
     });
 
     if (wvar["box"] != def["box"]){
-        console.log("box change detected")
         if(!def["box"]){
             $(".flatpage").hide()
         } else {
@@ -219,6 +218,14 @@ for(var idx in params) {
 
 // loads the tracker interface
 function trackerInit() {
+    // update current position if we geolocation is available
+    if(currentPosition) updateCurrentPosition(currentPosition.lat, currentPosition.lon);
+    
+    if (currentPosition && manual_pan == false){
+        coords = [currentPosition.lat, currentPosition.lon]
+        zoomLevel = 9;
+        map.setView(coords, zoomLevel, {animate: false});
+    }
     $('#loading,#settingsbox,#aboutbox,#chasebox').hide(); // welcome screen
     $('header,#main').show(); // interface elements
     checkSize();
@@ -665,7 +672,6 @@ $(window).ready(function() {
         var visible_box = $(".flatpage:visible");
         if (visible_box.length > 0){
             wvar.box = visible_box[0].id
-            console.log(wvar.box)
         } else {
             wvar.box = null
         }

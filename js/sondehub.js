@@ -867,13 +867,6 @@ function load() {
         zoomLevel = 5;
     }
 
-    // load location from browser position if possible
-    if (currentPosition){
-      console.log(currentPosition)
-      coords = [currentPosition.lat, currentPosition.lon]
-      zoomLevel = 9;
-    }
-
     //initialize map object
     map = new L.map(document.getElementById('map'), {
         zoom: zoomLevel,
@@ -988,8 +981,6 @@ function load() {
     
     L.control.predictionontrol({ position: 'topleft' }).addTo(map);
 
-    // update current position if we geolocation is available
-    if(currentPosition) updateCurrentPosition(currentPosition.lat, currentPosition.lon);
 
     //Receiver canvas
     receiverCanvas = new L.LayerGroup();
@@ -4207,10 +4198,7 @@ function refreshSingleNew(serial) {
           clearTimeout(periodical_focus_new);
           ajax_inprogress_single_new = false;
           // check if we have been redirected for history - if not we can also fetch that if it exists
-          console.log("completed first call")
-          console.log(xhr.responseURL)
           if (xhr.responseURL.includes(newdata_url)){
-            console.log("getting extra history")
             $.ajax({
                 type: "GET",
                 url: "https://sondehub-history.s3.amazonaws.com/serial/"+ encodeURIComponent(serial) +".json.gz",

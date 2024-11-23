@@ -3347,9 +3347,9 @@ function addPosition(position) {
 
         if (!offline.get("opt_hide_titles")) {
             if (vehicle_type == "car") {
-                title = marker.bindTooltip(vcallsign, {direction: 'center', permanent: 'true', className: 'serialtooltip'});
+                title = marker.bindTooltip(vcallsign, {direction: 'center', permanent: 'false', className: 'serialtooltip'});
             } else {
-                title = marker.bindTooltip((tempTitle), {direction: 'center', permanent: 'true', className: 'serialtooltip'});
+                title = marker.bindTooltip((tempTitle), {direction: 'center', permanent: 'false', className: 'serialtooltip'});
             }
         } else {
             title = null;
@@ -4933,6 +4933,8 @@ function showHorizonRings(){
         if(vehicles[vcallsign].vehicle_type == "balloon"){
             map.addLayer(vehicles[vcallsign].horizon_circle);
             map.addLayer(vehicles[vcallsign].subhorizon_circle);
+            vehicles[vcallsign].horizon_circle.fire("move")
+            vehicles[vcallsign].subhorizon_circle.fire("move")
             map.addLayer(vehicles[vcallsign].horizon_circle_title);
             map.addLayer(vehicles[vcallsign].subhorizon_circle_title);
         }
@@ -4950,7 +4952,7 @@ function hideTitles(){
 function showTitles(){
     for(var vcallsign in vehicles) {
         if(vehicles[vcallsign].vehicle_type == "balloon" || vehicles[vcallsign].vehicle_type == "car"){
-            vehicles[vcallsign].title = vehicles[vcallsign].marker.bindTooltip(vehicles[vcallsign]["marker"]["options"]["title"], {direction: 'center', permanent: 'true', className: 'serialtooltip'});
+            vehicles[vcallsign].title = vehicles[vcallsign].marker.bindTooltip(vehicles[vcallsign]["marker"]["options"]["title"], {direction: 'center', permanent: 'false', className: 'serialtooltip'});
         }
     }
 }

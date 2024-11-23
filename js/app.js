@@ -223,7 +223,6 @@ function trackerInit() {
     $('header,#main').show(); // interface elements
     checkSize();
 
-    if(map) return;
 
     if(is_mobile || wvar.enabled) $(".nav .wvar").hide();
 
@@ -235,7 +234,6 @@ function trackerInit() {
 
         return;
     }
-    if(!map) load();
     lhash_update(true);
 }
 
@@ -1090,3 +1088,6 @@ function update_countdown(){
 
 check_version()
 update_check = setInterval(check_version, 15 * 60 * 1000)
+
+startAjax()
+load();

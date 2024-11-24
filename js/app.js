@@ -107,21 +107,25 @@ function load_hash(no_refresh) {
 
         switch(k) {
             case "mt":
-                if( baseMaps.hasOwnProperty(v) ) {
+                if( baseMaps.hasOwnProperty(v) && map) {
                     map.removeLayer(baseMaps[selectedLayer]);
                     selectedLayer = v;
                     map.addLayer(baseMaps[v]);
                 }
                 break;
             case "mz":
-                map.setZoom(parseInt(v));
+                if (map){
+                    map.setZoom(parseInt(v));
+                }
                 break;
             case "mc":
                 def.zoom = false;
                 manual_pan = true;
                 v = v.split(',');
                 var latlng = new L.LatLng(v[0], v[1]);
-                map.panTo(latlng);
+                if (map){
+                    map.panTo(latlng);
+                }
                 break;
             case "f":
                 refocus = (follow_vehicle != v);
@@ -157,34 +161,36 @@ function load_hash(no_refresh) {
         if(wvar[k] != def[k]) refresh = true;
     });
 
-    if (wvar["box"] != def["box"]){
-        if(!def["box"]){
-            $(".flatpage").hide()
-        } else {
-            $(".flatpage").hide()
-            $("#"+def["box"]).show()
-        }
-        checkSize();
-        wvar["box"]= def["box"];
-        
-    }
+
 
     $.extend(true, wvar, def);
+    if(map){
+        if (wvar["box"] != def["box"]){
+            if(!def["box"]){
+                $(".flatpage").hide()
+            } else {
+                $(".flatpage").hide()
+                $("#"+def["box"]).show()
+            }
+            checkSize();
+            wvar["box"]= def["box"];
+            
+        }
+        // force refresh
+        if(!no_refresh) {
+        if(refresh) {
+            zoomed_in = false;
+            clean_refresh(wvar.mode, true);
+        }
+        else if(refocus) {
+            $(".row.active").removeClass('active');
+            $(".vehicle"+vehicles[wvar.focus].uuid).addClass('active');
+            followVehicle(wvar.focus, manual_pan, true);
+        }
+        }
 
-    // force refresh
-    if(!no_refresh) {
-       if(refresh) {
-           zoomed_in = false;
-           clean_refresh(wvar.mode, true);
-       }
-       else if(refocus) {
-           $(".row.active").removeClass('active');
-           $(".vehicle"+vehicles[wvar.focus].uuid).addClass('active');
-           followVehicle(wvar.focus, manual_pan, true);
-       }
+        lhash_update();
     }
-
-    lhash_update();
 }
 window.onhashchange = load_hash;
 
@@ -220,6 +226,8 @@ for(var idx in params) {
 function trackerInit() {
     // update current position if we geolocation is available
     if(currentPosition) updateCurrentPosition(currentPosition.lat, currentPosition.lon);
+
+    
     
     if (currentPosition && manual_pan == false){
         coords = [currentPosition.lat, currentPosition.lon]
@@ -229,6 +237,9 @@ function trackerInit() {
     $('#loading,#settingsbox,#aboutbox,#chasebox').hide(); // welcome screen
     $('header,#main').show(); // interface elements
     checkSize();
+
+    // if we there is enough screen space open aboutbox on startup
+    if(!is_mobile && !offline.get('opt_nowelcome') && $(window).width() > 900) $('.nav li.about').click();
 
 
     if(is_mobile || wvar.enabled) $(".nav .wvar").hide();
@@ -1094,6 +1105,6 @@ function update_countdown(){
 
 check_version()
 update_check = setInterval(check_version, 15 * 60 * 1000)
-
-startAjax()
+load_hash();
+startAjax();
 load();

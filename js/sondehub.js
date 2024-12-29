@@ -1369,6 +1369,11 @@ function habitat_data(jsondata, data_ages, current_timestamp, alternative) {
           }
       }
 
+      // Round frequency data
+      if(k === "frequency"){
+        v = v.toFixed(3);
+      }
+
       // Check if data is considered to be 'old'
       // Need to think about how to style old data.
       // Maybe make the text grey?
@@ -2865,7 +2870,7 @@ function mapInfoBox_handle_path_new(data, vehicle, date) {
     if (data.hasOwnProperty("tx_frequency")) {
         html += "<div><b>TX Frequency:&nbsp;</b>" + data.tx_frequency + " MHz</div>";
     } else if (data.hasOwnProperty("frequency")) {
-        html += "<div><b>Frequency:&nbsp;</b>" + data.frequency + " MHz</div>";
+        html += "<div><b>Frequency:&nbsp;</b>" + data.frequency.toFixed(3) + " MHz</div>";
     };
     if (data.hasOwnProperty("humidity")) {
         html += "<div><b>Relative Humidity:&nbsp;</b>" + data.humidity + " %</div>";

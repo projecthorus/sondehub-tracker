@@ -4699,8 +4699,17 @@ function updateRecoveryMarker(recovery) {
 
       div = document.createElement('div');
 
+      _recovered_text = recovery.recovered ? " Recovered" : " Not Recovered";
+
+      // Override text is planned field exists and is true
+      if(recovery.hasOwnProperty('planned')){
+        if(recovery.planned == true){
+            _recovered_text = " Recovery Planned";
+        }
+      }
+
       html = "<div style='line-height:16px;position:relative;'>";
-      html += "<div><b>"+recovery.serial+(recovery.recovered ? " Recovered" : " Not Recovered")+"</b></div>";
+      html += "<div><b>"+recovery.serial+_recovered_text+"</b></div>";
       html += "<hr style='margin:5px 0px'>";
       html += "<div style='margin-bottom:5px;'><b><i class='icon-location'></i>&nbsp;</b>"+format_coordinates(recovery.lat, recovery.lon, recovery.serial)+"</div>";
 
@@ -4755,6 +4764,7 @@ function updateRecoveryMarker(recovery) {
           recovery.recovered = r[i].recovered;
           recovery.description = r[i].description;
           recovery.datetime = r[i].datetime;
+          recovery.planned = r[i].planned;
           recovery.fresh = true;
           updateRecoveryMarker(recovery);
       
@@ -4808,8 +4818,17 @@ function updateRecoveryPane(r){
                 recoveries[r_index] = {marker: null, infobox: null};
             }
 
+            _recovered_text = r[i].recovered ? " Recovered by " : " Not Recovered by ";
+
+            // Override text is planned field exists and is true
+            if(r[i].hasOwnProperty('planned')){
+              if(r[i].planned == true){
+                  _recovered_text = " Recovery Planned by ";
+              }
+            }
+
             html += "<div style='line-height:16px;position:relative;'>";
-            html += "<div><b><u>"+r[i].serial+(r[i].recovered ? " Recovered by " : " Not Recovered by ")+r[i].recovered_by+"</u></b></div>";
+            html += "<div><b><u>"+r[i].serial+(_recovered_text)+r[i].recovered_by+"</u></b></div>";
             html += "<div style='margin-bottom:5px;'><b><button style='margin-bottom:0px;' onclick='panToRecovery(\"" + r[i].serial + "\")'><i class='icon-location'></i></button>&nbsp;</b>"+format_coordinates(lat, lon, r[i].serial)+"</div>";
     
             var imp = offline.get('opt_imperial');

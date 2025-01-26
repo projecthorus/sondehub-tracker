@@ -195,7 +195,16 @@ function drawHistorical (data, station) {
         html += "<hr style='margin:0px;margin-top:5px'>";
 
         if (recovered) {
-            html += "<div><b>"+(recovery_info.recovered ? "Recovered by " : "Not Recovered by ")+recovery_info.recovered_by+"</u></b></div>";
+            _recovered_text = recovery_info.recovered ? "Recovered by " : "Not Recovered by ";
+
+            // Override text is planned field exists and is true
+            if(recovery_info.hasOwnProperty('planned')){
+              if(recovery_info.planned == true){
+                  _recovered_text = "Recovery Planned by ";
+              }
+            }
+
+            html += "<div><b>"+(_recovered_text)+recovery_info.recovered_by+"</u></b></div>";
             html += "<div><b>Recovery time:&nbsp;</b>"+formatDate(stringToDateUTC(recovery_info.datetime))+"</div>";
             html += "<div><b>Recovery location:&nbsp;</b>"+recovery_info.position[1]+", "+recovery_info.position[0] + "</div>";
             html += "<div><b>Recovery notes:&nbsp;</b>"+recovery_info.description+"</div>";

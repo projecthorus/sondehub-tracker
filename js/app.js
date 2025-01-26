@@ -748,6 +748,23 @@ $(window).ready(function() {
         // turning the switch on
         } else {
             e.removeClass('off').addClass('on');
+            // Remove any planned recovery check.
+            $("#sw_recovery_planned").removeClass('on').addClass('off');
+        }
+    });
+    // Logic to switch the recovery Planned button
+    $("#sw_recovery_planned").click(function() {
+        var e = $(this);
+
+        // turning the switch off
+        if(e.hasClass('on')) {
+            e.removeClass('on').addClass('off');
+
+        // turning the switch on
+        } else {
+            e.removeClass('off').addClass('on');
+            // Set recovery OK to false.
+            $("#sw_recovery_ok").removeClass('on').addClass('off');
         }
     });
     // Logic to switch the use car position button
@@ -768,11 +785,21 @@ $(window).ready(function() {
         callsign = $(this).val().trim();
         offline.set('callsign', callsign); // put in localStorage
         CHASE_listenerSent = false;
+        $('#recovery_callsign').val(callsign);
     });
+
+    $("#recovery_callsign").on('change keyup', function() {
+        callsign = $(this).val().trim();
+        offline.set('callsign', callsign); // put in localStorage
+        CHASE_listenerSent = false;
+        $('#cc_callsign').val(callsign);
+    });
+
 
     // load value from localStorage
     callsign = offline.get('callsign');
     $('#cc_callsign').val(callsign);
+    $('#recovery_callsign').val(callsign);
 
     // settings page
 

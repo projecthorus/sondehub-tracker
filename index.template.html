@@ -91,11 +91,13 @@
         <div class="slimContainer">
             <h3><i class="icon-habhub rfloat"></i>Report Recovery</h3>
             <hr/>
-            <div class="row">
-            <span>You can report a recovery here. Enter the serial number (e.g. 'S1234567'), tick recovered/not recovered, and add some notes. <a href="https://github.com/projecthorus/sondehub-infra/wiki/Radiosonde-Serial-Numbers" target="_blank" rel="noopener">Click here</a> for information on how to locate a sonde's serial number.</a> If the sonde is not on the map, type its serial into the top-left search box (may require landscape mode on mobile) and press enter to retrieve historical data. You can then mark it as recovered or planned. Optionally, you can use your location instead of the sonde's last location.</span>
+            <div class="row">            
+            <span><b>Please report recovered radiosondes! Don't waste others time and effort with a frustrating failed recovery!</b></span>
+            <span>Enter the serial number, select recovered / planned, and add some notes. If marking as planned, please add contact information!</span>
+            <span>If the sonde is not on the map, type its serial into the top-left search box (may require landscape mode on mobile) and press enter to retrieve historical data.</span>
             </div>
             <div class="row">
-                <span><b>Serial</b></span>
+                <span><b>Serial</b> <a href="https://github.com/projecthorus/sondehub-infra/wiki/Radiosonde-Serial-Numbers" target="_blank" rel="noopener">(Help)</a></span>
                 <span class="r"><input type="text" id="pr_serial" style="width: 140px;"/></span>
             </div>
             <div class="row">
@@ -117,7 +119,7 @@
                 </div>
             </div>
             <div class="row option">
-                <span><b>Use Car Position</b></span>
+                <span><b>Use Browser Position</b></span>
                 <div class="switch off" id="sw_use_car_pos">
                     <span class="thumb"></span>
                     <input type="checkbox" id="use_car_pos">
@@ -411,6 +413,9 @@
             <div id="zoom_warning" class="lfloat slickbox" style="width:250px; bottom: 0px;   left: 50%; transform: translate(-50%, -50%);">
                 <div style="width:250px">Zoom in for realtime data!</div>
             </div>
+            <div id="recovery_notice" class="lfloat slickbox" onclick="show_recoveries();" style="width:270px; bottom: 0px; left: 50%; transform: translate(-50%, -50%); display:none;">
+                <div style="width:270px"><b>Please report radiosonde recoveries!<b/></div>
+            </div>
         </div>
         <div id="timebox" class="present slickbox animate" style="display: none">
             <svg width="40" height="40" viewbox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" version="1.1" version="1.1" class="lfloat">
@@ -450,8 +455,8 @@
         </div>
     </div>
 
-    <div id="reload_warning">This version of SondeHub is out of date. <a href="javascript:window.location.reload(true)">Click here to reload</a>. Page will reload automatically in <span id="reload_timer"></span>
-    </div>
+    <div id="reload_warning">This version of SondeHub is out of date. <a href="javascript:window.location.reload(true)">Click here to reload</a>. Page will reload automatically in <span id="reload_timer"></span></div>
+
 
     <!-- Was 3.31-->
 

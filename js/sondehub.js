@@ -1058,6 +1058,7 @@ function load() {
             }
         }
         updateZoom();
+        recoveryPopup();
     });
 
     map.on('movestart', function() {
@@ -1496,6 +1497,63 @@ function drawLOSPaths(vcallsign) {
         });
     });
 }
+
+var recovery_popup = true;
+function recoveryPopup(){
+        // Conditions for showing this are:
+        // Zoom level >= 13
+        // A sonde is in the map view area. (Use the subscribed sondes for this)
+        // If a user position is available, that position is within 500km of the sonde.
+        recovery_popup_limit = 500000;
+
+        if( (map.getZoom() >= 13) && (clientTopic.length >= 2)){
+            if(recovery_popup == true){
+                // Logic to not show a popup if the centre of the map is > 500km from the viewer location,
+                _viewer_lat = parseFloat($('#cc_lat').text())
+                _viewer_lon = parseFloat($('#cc_lon').text())
+
+                if ( (_viewer_lat != 0.0) && (_viewer_lon != 0.0) ){
+
+                    _map_centre = {
+                        'lat':map.getCenter().lat,
+                        'lon':map.getCenter().lng,
+                        'alt':0.0
+                    };
+                    _viewer = {
+                        'lat': _viewer_lat,
+                        'lon': _viewer_lon,
+                        'alt': 0.0
+                    };
+            
+                    // Calculate the distance from the sonde
+                    _lookangles = calculate_lookangles(_viewer, _map_centre);
+
+                    if(_lookangles.range > recovery_popup_limit){
+                        return;
+                    }
+                }
+
+                // If we're here, then we either don't have a valid viewer location,
+                // Or the viewer is within 500km. Show the popup.
+                console.log("Triggering Recovery Popup.")
+                document.getElementById("recovery_notice").style.display = "block";
+                // Don't re-activate the popup again
+                recovery_popup = false;
+                return;
+            }
+        }
+        document.getElementById("recovery_notice").style.display = "none";
+}
+
+function show_recoveries(){
+    if ($("#recoveriesbox").is(':visible') == false){
+        $('.nav .recoveries').click();
+    }
+    
+    document.getElementById("recovery_notice").style.display = "none";
+    recovery_popup = false;
+}
+
 
 function focusVehicle(vcallsign, ignoreOpt) {
     if(!offline.get('opt_hilight_vehicle') && ignoreOpt === undefined) return;

@@ -1535,7 +1535,7 @@ function recoveryPopup(){
 
                 // If we're here, then we either don't have a valid viewer location,
                 // Or the viewer is within 500km. Show the popup.
-                console.log("Triggering Recovery Popup.")
+                //console.log("Triggering Recovery Popup.")
                 document.getElementById("recovery_notice").style.display = "block";
                 // Don't re-activate the popup again
                 recovery_popup = false;
@@ -1549,7 +1549,7 @@ function show_recoveries(){
     if ($("#recoveriesbox").is(':visible') == false){
         $('.nav .recoveries').click();
     }
-    
+
     document.getElementById("recovery_notice").style.display = "none";
     recovery_popup = false;
 }

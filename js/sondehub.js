@@ -1535,22 +1535,32 @@ function recoveryPopup(){
 
                 // If we're here, then we either don't have a valid viewer location,
                 // Or the viewer is within 500km. Show the popup.
-                //console.log("Triggering Recovery Popup.")
-                document.getElementById("recovery_notice").style.display = "block";
-                // Don't re-activate the popup again
-                recovery_popup = false;
+                var recoveryNotice = document.getElementById("recovery_notice");
+                if (recoveryNotice) {
+                    recoveryNotice.style.display = "block";
+                }                
                 return;
             }
         }
-        document.getElementById("recovery_notice").style.display = "none";
-}
+        var recoveryNotice = document.getElementById("recovery_notice");
+        if (recoveryNotice) {
+            recoveryNotice.style.display = "none";
+        }    
+    }
 
 function show_recoveries(){
+    // Open the recovery reporting tab
     if ($("#recoveriesbox").is(':visible') == false){
         $('.nav .recoveries').click();
     }
 
-    document.getElementById("recovery_notice").style.display = "none";
+    // Hide the recovery notice
+    var recoveryNotice = document.getElementById("recovery_notice");
+    if (recoveryNotice) {
+        recoveryNotice.style.display = "none";
+    }
+
+    // Don't show the recovery notice again.
     recovery_popup = false;
 }
 

@@ -684,9 +684,7 @@ $(window).ready(function() {
         } else {
             wvar.box = null
         }
-        //console.log("aaa")
-        //console.log(wvar.box)
-        //console.log("bbbb")
+
         lhash_update(true);
         checkSize();
     });

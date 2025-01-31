@@ -99,11 +99,13 @@ body {
 #timebox {
     top: 7px;
     right: 5px;
+    width: 205px;
 }
 
 #lookanglesbox {
     top: 40px;
     right: 5px;
+    width: 205px;
 }
 
 #timebox.past svg path {

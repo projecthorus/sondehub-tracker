@@ -495,7 +495,9 @@ var format_coordinates = function(lat, lon, name) {
     } else if(ua.indexOf('android') > -1) {
         a.href = 'geo:'+lat+','+lon+'?q='+lat+','+lon+'('+name+')'
     } else {
-        a.href = 'https://www.google.com/maps/search/?api=1&query='+lat+','+lon+'" target="_blank" rel="noopener noreferrer">' 
+        a.href = 'https://www.google.com/maps/search/?api=1&query='+lat+','+lon
+        a.target="_blank"
+        a.rel="noopener noreferrer"
     }
     a.innerText = roundNumber(lat, 5) + ', ' + roundNumber(lon, 5)
 

@@ -4835,22 +4835,26 @@ function updateRecoveryMarker(recovery) {
       }
 
       html = "<div style='line-height:16px;position:relative;'>";
-      html += "<div><b>"+recovery.serial+_recovered_text+"</b></div>";
+      html += "<div><b class='recovery_text'></b></div>";
       html += "<hr style='margin:5px 0px'>";
       html += "<div style='margin-bottom:5px;'><b><i class='icon-location'></i>&nbsp;</b>"+format_coordinates(recovery.lat, recovery.lon, recovery.serial)+"</div>";
 
-      var imp = offline.get('opt_imperial');
-      var text_alt      = Number((imp) ? Math.floor(3.2808399 * parseInt(recovery.alt)) : parseInt(recovery.alt)).toLocaleString("us");
-      text_alt     += "&nbsp;" + ((imp) ? 'ft':'m');
-
-      html += "<div><b>Time:&nbsp;</b>"+formatDate(stringToDateUTC(recovery.datetime))+"</div>";
-      html += "<div><b>Reported by:&nbsp;</b>"+recovery.recovered_by+"</div>";
-      html += "<div><b>Notes:&nbsp;</b>"+$('<div>').text(recovery.description).html()+"</div>";
-      html += "<div><b>Flight Path:&nbsp;</b><a href=\"javascript:showRecoveredMap('" + recovery.serial + "')\">"+recovery.serial+"</a></div>";
+      html += "<div><b>Time:&nbsp;</b><span class='recovery_time'></span></div>";
+      html += "<div><b>Reported by:&nbsp;</b><span class='recovery_by'></span></div>";
+      html += "<div><b>Notes:&nbsp;</b><span class='recovery_desc'></span></div>";
+      html += "<div><b>Flight Path:&nbsp;</b><a href='#' class='recovery_path'></a></div>";
 
       html += "</div>";
 
       div.innerHTML = html;
+      div.getElementsByClassName("recovery_text")[0].textContent = recovery.serial+_recovered_text
+      div.getElementsByClassName("recovery_time")[0].textContent = formatDate(stringToDateUTC(recovery.datetime))
+      div.getElementsByClassName("recovery_by")[0].textContent = recovery.recovered_by
+      div.getElementsByClassName("recovery_desc")[0].textContent = recovery.description
+      div.getElementsByClassName("recovery_path")[0].textContent = recovery.serial
+      div.getElementsByClassName("recovery_path")[0].onclick = function(){
+        showRecoveredMap(recovery.serial)
+      }
 
       recovery.infobox.setContent(div);
 

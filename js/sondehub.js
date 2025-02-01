@@ -1100,7 +1100,7 @@ function load() {
             var img = this._createImg(this.options['iconUrl']);
             var numdiv = document.createElement('div');
             numdiv.setAttribute ( "class", "number" );
-            numdiv.innerHTML = this.options['number'] || '';
+            numdiv.innerText = this.options['number'] || '';
             div.appendChild ( img );
             div.appendChild ( numdiv );
             this._setIconStyles(div, 'icon');
@@ -2832,50 +2832,67 @@ function mapInfoBox_handle_path_old(vehicle, id) {
                     div = document.createElement('div');
 
                     html = "<div style='line-height:16px;position:relative;'>";
-                    html += "<div>"+data.serial+" <span style=''>("+data.datetime+")</span></div>";
+                    html += "<div><span class='old_path_serial'></span> <span style='' class=''></span></div>";
                     html += "<hr style='margin:5px 0px'>";
-                    html += "<div style='margin-bottom:5px;'><b><i class='icon-location'></i>&nbsp;</b>"+format_coordinates(data.lat, data.lon, data.serial)+"</div>";
+                    html += "<div style='margin-bottom:5px;'><b><i class='icon-location'></i> </b><span class='old_path_coords'></span></div>";
 
                     var imp = offline.get('opt_imperial');
                     var text_alt = Number((imp) ? Math.floor(3.2808399 * parseInt(data.alt)) : parseInt(data.alt)).toLocaleString("us");
-                    text_alt += "&nbsp;" + ((imp) ? 'ft':'m');
+                    text_alt += " " + ((imp) ? 'ft':'m');
 
-                    html += "<div><b>Altitude:&nbsp;</b>"+text_alt+"</div>";
-                    html += "<div><b>Time:&nbsp;</b>"+formatDate(stringToDateUTC(data.datetime))+"</div>";
+                    html += "<div><b>Altitude: </b><span class='old_path_alt'></span></div>";
+                    html += "<div><b>Time: </b><span class='old_path_time_short'></span></div>";
 
                     var value = vehicle.path_length;
 
-                    html += "<div><b>Distance:&nbsp;</b>";
+                    html += "<div><b>Distance: </b><span class='old_path_time_distance'></span>";
 
                     if(offline.get('opt_imperial')) {
-                        html += Math.round(value*0.000621371192) + "&nbsp;mi";
+                        var distance = Math.round(value*0.000621371192) + " mi";
                     } else {
-                        html += Math.round(value/10)/100 + "&nbsp;km";
+                        var distance = Math.round(value/10)/100 + " km";
                     }
 
                     html += "</div>";
-                    html += "<div><b>Duration:&nbsp;</b>" + format_time_friendly(vehicle.start_time, convert_time(vehicle.curr_position.gps_time)) + "</div>";
+                    html += "<div><b>Duration: </b><span class='old_path_duration'></span></div>";
 
                     html += "<hr style='margin:5px 0px'>";
 
                     if (data.hasOwnProperty("humidity")) {
-                        html += "<div><b>Relative Humidity:&nbsp;</b>" + data.humidity + " %</div>";
+                        html += "<div><b>Relative Humidity: </b><span class='old_path_humidity'></span> %</div>";
                     };
                     if (data.hasOwnProperty("temp")) {
-                        html += "<div><b>Temperature External:&nbsp;</b>" + data.temp + "°C</div>";
+                        html += "<div><b>Temperature External: </b><span class='old_path_temp'></span>°C</div>";
                     };
                     if (data.hasOwnProperty("comment")) {
-                        html += "<div><b>Comment:&nbsp;</b>" + data.comment + "</div>";
+                        html += "<div><b>Comment: </b><span class='old_path_comment'></span></div>";
                     };
 
                     html += "<hr style='margin:0px;margin-top:5px'>";
                     html += "<div style='font-size:11px;'>"
 
                     if (data.hasOwnProperty("uploader_callsign")) {
-                        html += "<div>" + data.uploader_callsign + "</div>";
+                        html += "<div><span class='old_path_uploader_callsign'></span></div>";
                     };
 
+                    
+
                     div.innerHTML = html;
+
+                    div.getElementsByClassName("old_path_serial")[0].textContent = data.serial
+                    div.getElementsByClassName("old_path_time")[0].textContent = "("+data.datetime+")"
+                    div.getElementsByClassName("old_path_coords")[0].innerHTML = format_coordinates(data.lat, data.lon, data.serial)
+                    div.getElementsByClassName("old_path_alt")[0].textContent = text_alt
+                    div.getElementsByClassName("old_path_time_short")[0].textContent = formatDate(stringToDateUTC(data.datetime))
+                    div.getElementsByClassName("old_path_time_distance")[0].textContent = distance
+                    div.getElementsByClassName("old_path_duration")[0].textContent = format_time_friendly(vehicle.start_time, convert_time(vehicle.curr_position.gps_time))
+                    div.getElementsByClassName("old_path_humidity")[0].textContent = data.humidity
+                    div.getElementsByClassName("old_path_temp")[0].textContent = data.temp
+                    div.getElementsByClassName("old_path_comment")[0].textContent = data.comment
+
+                    if (data.hasOwnProperty("uploader_callsign")) {
+                        div.getElementsByClassName("old_path_uploader_callsign")[0].textContent = data.uploader_callsign
+                    }
 
                     mapInfoBox.setContent(div);
                     mapInfoBox.openOn(map);
@@ -2907,87 +2924,90 @@ function mapInfoBox_handle_path_new(data, vehicle, date) {
     div = document.createElement('div');
 
     html = "<div style='line-height:16px;position:relative;'>";
-    html += "<div>"+data.serial+" <span style=''>("+date+")</span></div>";
+    html += "<div><span class='new_path_serial'></span> <span style='' class='new_path_time'></span></div>";
     html += "<hr style='margin:5px 0px'>";
-    html += "<div style='margin-bottom:5px;'><b><i class='icon-location'></i>&nbsp;</b>"+format_coordinates(data.lat, data.lon, data.serial)+"</div>";
+    html += "<div style='margin-bottom:5px;'><b><i class='icon-location'></i>&nbsp;</b><span class='new_path_coords'></span></div>";
 
     var imp = offline.get('opt_imperial');
     var text_alt = Number((imp) ? Math.floor(3.2808399 * parseInt(data.alt)) : parseInt(data.alt)).toLocaleString("us");
-    text_alt += "&nbsp;" + ((imp) ? 'ft':'m');
+    text_alt += " " + ((imp) ? 'ft':'m');
 
-    html += "<div><b>Altitude:&nbsp;</b>"+text_alt+"</div>";
-    html += "<div><b>Time:&nbsp;</b>"+formatDate(stringToDateUTC(date))+"</div>";
+    html += "<div><b>Altitude: </b><span class='new_path_alt'></span></div>";
+    html += "<div><b>Time: </b><span class='new_path_time_short'></span></div>";
 
     var value = vehicle.path_length;
 
-    html += "<div><b>Distance:&nbsp;</b>";
+    html += "<div><b>Distance: </b>";
 
     if(offline.get('opt_imperial')) {
-        html += Math.round(value*0.000621371192) + "&nbsp;mi";
+        var distance = Math.round(value*0.000621371192) + " mi";
     } else {
-        html += Math.round(value/10)/100 + "&nbsp;km";
+        var distance = Math.round(value/10)/100 + " km";
     }
 
-    html += "</div>";
-    html += "<div><b>Duration:&nbsp;</b>" + format_time_friendly(vehicle.start_time, convert_time(vehicle.curr_position.gps_time)) + "</div>";
+    html += "<span class='new_path_time_distance'></span></div>";
+    html += "<div><b>Duration: </b><span class='new_path_duration'></span></div>";
 
-    html += "<hr style='margin:5px 0px'>";
+    html += "<hr style='margin:5px 0px'><div class='new_path_props'></div>";
 
-    if (data.hasOwnProperty("batt")) {
-        html += "<div><b>Battery Voltage:&nbsp;</b>" + data.batt + " V</div>";
-    };
-    if (data.hasOwnProperty("tx_frequency")) {
-        html += "<div><b>TX Frequency:&nbsp;</b>" + data.tx_frequency + " MHz</div>";
-    } else if (data.hasOwnProperty("frequency")) {
-        html += "<div><b>Frequency:&nbsp;</b>" + data.frequency.toFixed(3) + " MHz</div>";
-    };
-    if (data.hasOwnProperty("humidity")) {
-        html += "<div><b>Relative Humidity:&nbsp;</b>" + data.humidity + " %</div>";
-    };
-    if (data.hasOwnProperty("manufacturer")) {
-        html += "<div><b>Manufacturer:&nbsp;</b>" + data.manufacturer + "</div>";
-    };
-    if (data.hasOwnProperty("pressure")) {
-        html += "<div><b>Pressure:&nbsp;</b>" + data.pressure + " Pa</div>";
-    };
-    if (data.hasOwnProperty("sats")) {
-        html += "<div><b>Satellites:&nbsp;</b>" + data.sats + "</div>";
-    };
-    if (data.hasOwnProperty("temp")) {
-        html += "<div><b>Temperature External:&nbsp;</b>" + data.temp + "°C</div>";
-    };
-    if (data.hasOwnProperty("subtype")) {
-        html += "<div><b>Sonde Type:&nbsp;</b>" + data.subtype + "</div>";
-    } else if (data.hasOwnProperty("type")) {
-        html += "<div><b>Sonde Type:&nbsp;</b>" + data.type + "</div>";
-    };
+    function prop(parent, field_name, description, unit="", fixed=undefined){
+        if (data.hasOwnProperty(field_name)){
+            var div = document.createElement("div")
+            var b = document.createElement("b")
+            b.innerText = description + ": "
+            var span = document.createElement("span")
+            var value = data[field_name];
+            if (fixed){
+                value = value.toFixed(fixed)
+            }
+            span.textContent = value + " " + unit
+            div.appendChild(b)
+            div.appendChild(span)
+            parent.appendChild(div)
+            return true
+        } 
+        return false
+    }
+    var xdata_fields = document.createElement("div");
     if (data.hasOwnProperty("xdata")) {
         html += "<hr style='margin:0px;margin-top:5px'>";
         html += "<div style='font-size:11px;'>"
-        html += "<div><b>XDATA:&nbsp;</b>" + data.xdata + "</div>";
+        html += "</div><div class='new_path_xdata_prop'></div>";
         if (data.hasOwnProperty("pressure")) {
             xdata_pressure = data.pressure;
         } else {
             xdata_pressure = 1100.0;
         }
         var tempXDATA = parseXDATA(data.xdata, xdata_pressure);
+        
         for (let field in tempXDATA) {
             if (tempXDATA.hasOwnProperty(field)) {
+                var xdiv = document.createElement("div");
+                var xb = document.createElement("b");
+                var xs = document.createElement("span");
+                xdiv.appendChild(xb)
+                xdiv.appendChild(xs)
+                xdata_fields.appendChild(xdiv)
                 if (field == "xdata_instrument") {
-                    html += "<div><b>XDATA Instrument:&nbsp;</b>" + tempXDATA.xdata_instrument.join(', ') + "</div>";
+                    xb.textContent = "XDATA Instrument: "
+                    xs.textContent = tempXDATA.xdata_instrument.join(', ')
                 } else {
                     if (globalKeys.hasOwnProperty(field)) {
                         if (globalSuffixes.hasOwnProperty(field)) {
-                            html += "<div><b>" + globalKeys[field] + ":&nbsp;</b>" + tempXDATA[field] + globalSuffixes[field] + "</div>";
+                            xb.textContent = globalKeys[field] + ": " 
+                            xs.textContent = tempXDATA[field] + globalSuffixes[field]
                         } else {
-                            html += "<div><b>" + globalKeys[field] + ":&nbsp;</b>" + tempXDATA[field] + "</div>";
+                            xb.textContent = globalKeys[field] + ": "
+                            xs.textContent = tempXDATA[field]
                         }
                         
                     } else {
                         if (globalSuffixes.hasOwnProperty(field)) {
-                            html += "<div><b>" + guess_name(field) + ":&nbsp;</b>" + tempXDATA[field] + globalSuffixes[field] + "</div>";
+                            xb.textContent = guess_name(field) + ": "
+                            xs.textContent = tempXDATA[field] + globalSuffixes[field] 
                         } else {
-                            html += "<div><b>" + guess_name(field) + ":&nbsp;</b>" + tempXDATA[field] + "</div>";
+                            xb.textContent = guess_name(field) + ": "
+                            xs.textContent = tempXDATA[field]
                         }
                     }  
                 }
@@ -3018,11 +3038,48 @@ function mapInfoBox_handle_path_new(data, vehicle, date) {
         callsign_list.push(_new_call); // catch cases where there are no fields
     }
 
-    callsign_list = callsign_list.join("<br /> ");
-
-    html += callsign_list + "</div>";
+    callsign_list = callsign_list.join("\n");
+    callsign_span = document.createElement("span")
+    callsign_span.innerText = callsign_list
 
     div.innerHTML = html;
+    div.appendChild(callsign_span)
+
+    div.getElementsByClassName("new_path_serial")[0].textContent = data.serial
+    div.getElementsByClassName("new_path_time")[0].textContent = "("+date+")"
+
+    div.getElementsByClassName("new_path_coords")[0].innerHTML = format_coordinates(data.lat, data.lon, data.serial); // for compat we are generating safeish url in format_coordinates
+
+    div.getElementsByClassName("new_path_alt")[0].textContent = text_alt
+    div.getElementsByClassName("new_path_time_short")[0].textContent = formatDate(stringToDateUTC(date))
+
+
+    div.getElementsByClassName("new_path_time_distance")[0].textContent = distance
+
+    div.getElementsByClassName("new_path_duration")[0].textContent = format_time_friendly(vehicle.start_time, convert_time(vehicle.curr_position.gps_time))
+
+
+    var prop_parent = div.getElementsByClassName("new_path_props")[0]
+    prop(prop_parent,"batt",  "Battery Voltage", "V");
+
+    if (!prop(prop_parent,"tx_frequency",  "TX Frequency", "MHz", 3)){
+        prop(prop_parent,"frequency",  "Frequency", "MHz", 3);
+    }
+
+
+    prop(prop_parent,"humidity",  "Relative Humidity","%", 3);
+    prop(prop_parent,"manufacturer",  "Manufacturer");
+    prop(prop_parent,"pressure",  "Pressure", "Pa", 4);
+    prop(prop_parent,"sats",  "Satellites");
+    prop(prop_parent,"temp",  "Temperature External", "°C", 3);
+
+    if (!prop(prop_parent,"subtype",  "Sonde Type")){
+        prop(prop_parent,"type",  "Sonde Type")
+    }
+    prop(prop_parent,"xdata",  "XDATA");
+    if (data.hasOwnProperty("xdata")) {
+        div.getElementsByClassName("new_path_xdata_prop")[0].appendChild(xdata_fields)
+    }
 
     mapInfoBox.setContent(div);
     mapInfoBox.openOn(map);

@@ -1697,9 +1697,9 @@ function formatDate(date,utc) {
 
     if(typeof utc != "undefined") {
         z = date.getTimezoneOffset() / -60;
-        return a+'-'+b+'-'+c+'&nbsp;'+e+':'+f+':'+g+"&nbsp;UTC"+((z<0)?"-":"+")+z;
+        return a+'-'+b+'-'+c+' '+e+':'+f+':'+g+" UTC"+((z<0)?"-":"+")+z;
     } else {
-        return a+'-'+b+'-'+c+'&nbsp;'+e+':'+f+':'+g;
+        return a+'-'+b+'-'+c+' '+e+':'+f+':'+g;
     }
 }
 
@@ -3067,11 +3067,11 @@ function mapInfoBox_handle_path_new(data, vehicle, date) {
     }
 
 
-    prop(prop_parent,"humidity",  "Relative Humidity","%", 3);
+    prop(prop_parent,"humidity",  "Relative Humidity","%", 1);
     prop(prop_parent,"manufacturer",  "Manufacturer");
-    prop(prop_parent,"pressure",  "Pressure", "Pa", 4);
+    prop(prop_parent,"pressure",  "Pressure", "Pa", 1);
     prop(prop_parent,"sats",  "Satellites");
-    prop(prop_parent,"temp",  "Temperature External", "°C", 3);
+    prop(prop_parent,"temp",  "Temperature External", "°C", 1);
 
     if (!prop(prop_parent,"subtype",  "Sonde Type")){
         prop(prop_parent,"type",  "Sonde Type")

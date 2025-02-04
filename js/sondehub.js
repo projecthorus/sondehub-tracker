@@ -619,6 +619,15 @@ var getlost = L.tileLayer('https://live.getlost.com.au/{z}/{x}/{y}.jpg', {
 });
 getlost.id = "GetLost";
 
+var highSight = L.tileLayer('https://api.highsight.dev/v1/tiles/{z}/{x}/{y}?key=ARX3jYxzWotJVz7ZgdDiMQI18tZJ5WCk', {
+    attribution: '&copy; <a href="https://highsight.dev/">HighSight</a>',
+    maxZoom: 9,
+    minZoom: 3
+  });
+
+highSight.id = "HighSight";
+
+
 var baseMaps = {
     "Mapnik": osm,
     "DarkMatter": dark_matter,
@@ -626,6 +635,7 @@ var baseMaps = {
     "Terrain": stamen_terrain,
     "Voyager": cartodb_voyager,
     "OpenTopoMap": opentopomap,
+    "HighSight": highSight
 }
 
 var selectedLayer = "Mapnik";
@@ -639,6 +649,7 @@ var tile_loads = {
     "Terrain": 0,
     "Voyager": 0,
     "OpenTopoMap": 0,
+    "HighSight": 0
 }
 
 // Add handlers to eadh tileload event to simply increment a counter.
@@ -649,34 +660,36 @@ worldimagery.on('tileload', function() { tile_loads["WorldImagery"]++ });
 stamen_terrain.on('tileload', function() { tile_loads["Terrain"]++ });
 cartodb_voyager.on('tileload', function() { tile_loads["Voyager"]++ });
 opentopomap.on('tileload', function() { tile_loads["OpenTopoMap"]++ });
+highSight.on('tileload', function() { tile_loads["HighSight"]++ });
 
 
 var last_sent_tile_loads = {}
 
-setInterval(function(){
+// Disabled 2025-02-04
+// setInterval(function(){
 
-    temp_tile_loads = Object.assign({},tile_loads);
+//     temp_tile_loads = Object.assign({},tile_loads);
 
-    // Check if the tile load count has changed.
-    // Using JSON stringify is a bit of a hack, but appropriate for this kind of job.
-    if(JSON.stringify(last_sent_tile_loads) == JSON.stringify(temp_tile_loads)){
-        // Tile loads havent changed, do nothing,
-    } else {
-        // Tile loads have changed. Update the store, and send the data.
-        last_sent_tile_loads = Object.assign({},tile_loads);
+//     // Check if the tile load count has changed.
+//     // Using JSON stringify is a bit of a hack, but appropriate for this kind of job.
+//     if(JSON.stringify(last_sent_tile_loads) == JSON.stringify(temp_tile_loads)){
+//         // Tile loads havent changed, do nothing,
+//     } else {
+//         // Tile loads have changed. Update the store, and send the data.
+//         last_sent_tile_loads = Object.assign({},tile_loads);
 
-        // Send!
+//         // Send!
 
-        $.ajax({
-            type: "PUT",
-            url: "https://api.v2.sondehub.org/tiles/count",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: JSON.stringify({'client': clientID, 'tile_loads': last_sent_tile_loads}),
-        });
-    }
+//         $.ajax({
+//             type: "PUT",
+//             url: "https://api.v2.sondehub.org/tiles/count",
+//             contentType: "application/json; charset=utf-8",
+//             dataType: "json",
+//             data: JSON.stringify({'client': clientID, 'tile_loads': last_sent_tile_loads}),
+//         });
+//     }
 
-}, 60000)
+// }, 60000)
 
 
 

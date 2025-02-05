@@ -622,7 +622,8 @@ getlost.id = "GetLost";
 var highSight = L.tileLayer('https://api.highsight.dev/v1/tiles/{z}/{x}/{y}?key=ARX3jYxzWotJVz7ZgdDiMQI18tZJ5WCk', {
     attribution: '&copy; <a href="https://highsight.dev/">HighSight</a>',
     maxZoom: 9,
-    minZoom: 3
+    minZoom: 3,
+    crossOrigin: true
   });
 
 highSight.id = "HighSight";

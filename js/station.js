@@ -174,7 +174,17 @@ function drawHistorical (data, station) {
             }
         }
 
-        var popup = L.popup();
+        var popup = new L.popup({ autoClose: false, closeOnClick: false }).setContent(serial);
+
+        if (!recovered) {
+            var marker = L.circleMarker([landing.lat, landing.lon], {fillColor: "white", color: iconColour, weight: 3, radius: 5, fillOpacity:1});
+        } else {
+            var marker = L.circleMarker([landing.lat, landing.lon], {fillColor: "grey", color: iconColour, weight: 3, radius: 5, fillOpacity:1});
+        }
+
+        marker.bindPopup(popup);
+
+        div = document.createElement('div');
 
         html = "<div style='line-height:16px;position:relative;'>";
         html += "<div>"+serial+" <span style=''>("+time+")</span></div>";
@@ -194,23 +204,13 @@ function drawHistorical (data, station) {
 
         html += "<hr style='margin:0px;margin-top:5px'>";
 
-        if (recovered) {
-            _recovered_text = recovery_info.recovered ? "Recovered by " : "Not Recovered by ";
-
-            // Override text is planned field exists and is true
-            if(recovery_info.hasOwnProperty('planned')){
-              if(recovery_info.planned == true){
-                  _recovered_text = "Recovery Planned by ";
-              }
-            }
-
-            html += "<div><b>"+(_recovered_text)+recovery_info.recovered_by+"</u></b></div>";
-            html += "<div><b>Recovery time:&nbsp;</b>"+formatDate(stringToDateUTC(recovery_info.datetime))+"</div>";
-            html += "<div><b>Recovery location:&nbsp;</b>"+recovery_info.position[1]+", "+recovery_info.position[0] + "</div>";
-            html += "<div><b>Recovery notes:&nbsp;</b>"+recovery_info.description+"</div>";
-
-            html += "<hr style='margin:0px;margin-top:5px'>";
-        }
+        html += "<div class='recovery_section' style='line-height:16px;position:relative;'>";
+        html += "<div><b class='recovery_text'></b></div>";
+        html += "<div><b>Reported at:&nbsp;</b><span class='recovery_time'></span></div>";
+        html += "<div><b>Reported by:&nbsp;</b><span class='recovery_by'></span></div>";
+        html += "<div><b>Notes:&nbsp;</b><span class='recovery_desc'></span></div>";
+        html += "<hr style='margin:0px;margin-top:5px'>";
+        html += "</div>";
 
         html += "<div><b>Show Full Flight Path: <b><a href=\"javascript:showRecoveredMap('" + serial + "')\">" + serial + "</a></div>";
 
@@ -221,15 +221,28 @@ function drawHistorical (data, station) {
             html += "<div>Last received by: " + landing.uploader_callsign.toLowerCase() + "</div>";
         };
 
-        popup.setContent(html);
+        div.innerHTML = html;
 
-        if (!recovered) {
-            var marker = L.circleMarker([landing.lat, landing.lon], {fillColor: "white", color: iconColour, weight: 3, radius: 5, fillOpacity:1});
+
+        if (recovered) {
+            _recovered_text = recovery_info.recovered ? " Recovered" : "Not Recovered";
+
+            // Override text is planned field exists and is true
+            if(recovery_info.hasOwnProperty('planned')){
+              if(recovery_info.planned == true){
+                  _recovered_text = " Recovery Planned";
+              }
+            }
+            div.getElementsByClassName("recovery_text")[0].textContent = recovery_info.serial + _recovered_text;
+            div.getElementsByClassName("recovery_time")[0].textContent = formatDate(stringToDateUTC(recovery_info.datetime));
+            div.getElementsByClassName("recovery_by")[0].textContent = recovery_info.recovered_by;
+            div.getElementsByClassName("recovery_desc")[0].textContent = recovery_info.description;
         } else {
-            var marker = L.circleMarker([landing.lat, landing.lon], {fillColor: "grey", color: iconColour, weight: 3, radius: 5, fillOpacity:1});
+            div.getElementsByClassName("recovery_section")[0].style.display = "none";
         }
 
-        marker.bindPopup(popup);
+        popup.setContent(div);
+
 
         marker.addTo(map);
         marker.bringToBack();

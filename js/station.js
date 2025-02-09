@@ -197,10 +197,7 @@ function drawHistorical (data, station) {
 
         html += "<div><b>Altitude:&nbsp;</b>"+text_alt+"</div>";
         html += "<div><b>Time:&nbsp;</b>"+formatDate(stringToDateUTC(time))+"</div>";
-
-        if (landing.hasOwnProperty("type")) {
-            html += "<div><b>Sonde Type:&nbsp;</b>" + landing.type + "</div>";
-        };
+        html += "<div><b>Sonde Type:&nbsp;</b><span class='landing_sonde_type'>Unknown</span></div>"
 
         html += "<hr style='margin:0px;margin-top:5px'>";
 
@@ -226,6 +223,11 @@ function drawHistorical (data, station) {
         div.getElementsByClassName("recovery_path")[0].onclick = function(){
           showRecoveredMap(serial)
         }
+
+        if (landing.hasOwnProperty("type")) {
+            div.getElementsByClassName("landing_sonde_type")[0].textContent = landing.type;
+        };
+
         if (landing.hasOwnProperty("uploader_callsign")) {
             div.getElementsByClassName("landing_uploader_callsign")[0].textContent = "Last received by: " + landing.uploader_callsign.toLowerCase();
         };

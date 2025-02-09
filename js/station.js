@@ -216,10 +216,8 @@ function drawHistorical (data, station) {
 
         html += "<hr style='margin:0px;margin-top:5px'>";
         html += "<div style='font-size:11px;'>"
-
-        if (landing.hasOwnProperty("uploader_callsign")) {
-            html += "<div>Last received by: " + landing.uploader_callsign.toLowerCase() + "</div>";
-        };
+        html += "<div><b><span class='landing_uploader_callsign'></span></b></div>"
+        html += "</div>";
 
         div.innerHTML = html;
 
@@ -228,6 +226,9 @@ function drawHistorical (data, station) {
         div.getElementsByClassName("recovery_path")[0].onclick = function(){
           showRecoveredMap(serial)
         }
+        if (landing.hasOwnProperty("uploader_callsign")) {
+            div.getElementsByClassName("landing_uploader_callsign")[0].textContent = "Last received by: " + landing.uploader_callsign.toLowerCase();
+        };
 
         if (recovered) {
             _recovered_text = recovery_info.recovered ? " Recovered" : "Not Recovered";

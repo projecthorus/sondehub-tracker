@@ -212,7 +212,7 @@ function drawHistorical (data, station) {
         html += "<hr style='margin:0px;margin-top:5px'>";
         html += "</div>";
 
-        html += "<div><b>Show Full Flight Path: <b><a href=\"javascript:showRecoveredMap('" + serial + "')\">" + serial + "</a></div>";
+        html += "<div><b>Show Full Flight Path:&nbsp;</b><a href='#' class='recovery_path'></a></div>";
 
         html += "<hr style='margin:0px;margin-top:5px'>";
         html += "<div style='font-size:11px;'>"
@@ -223,6 +223,11 @@ function drawHistorical (data, station) {
 
         div.innerHTML = html;
 
+
+        div.getElementsByClassName("recovery_path")[0].textContent = serial
+        div.getElementsByClassName("recovery_path")[0].onclick = function(){
+          showRecoveredMap(serial)
+        }
 
         if (recovered) {
             _recovered_text = recovery_info.recovered ? " Recovered" : "Not Recovered";

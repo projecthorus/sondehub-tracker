@@ -641,61 +641,6 @@ var baseMaps = {
 
 var selectedLayer = "Mapnik";
 
-// Tile load analytics - 2023-01-09
-// This code allows us to get some understanding of total tile loads across all users.
-var tile_loads = {
-    "Mapnik": 0,
-    "DarkMatter": 0,
-    "WorldImagery": 0,
-    "Terrain": 0,
-    "Voyager": 0,
-    "OpenTopoMap": 0,
-    "HighSight": 0
-}
-
-// Add handlers to eadh tileload event to simply increment a counter.
-// We don't need any more data than this.
-osm.on('tileload', function() { tile_loads["Mapnik"]++ });
-dark_matter.on('tileload', function() { tile_loads["DarkMatter"]++ });
-worldimagery.on('tileload', function() { tile_loads["WorldImagery"]++ });
-stamen_terrain.on('tileload', function() { tile_loads["Terrain"]++ });
-cartodb_voyager.on('tileload', function() { tile_loads["Voyager"]++ });
-opentopomap.on('tileload', function() { tile_loads["OpenTopoMap"]++ });
-highSight.on('tileload', function() { tile_loads["HighSight"]++ });
-
-
-var last_sent_tile_loads = {}
-
-// Disabled 2025-02-04
-// setInterval(function(){
-
-//     temp_tile_loads = Object.assign({},tile_loads);
-
-//     // Check if the tile load count has changed.
-//     // Using JSON stringify is a bit of a hack, but appropriate for this kind of job.
-//     if(JSON.stringify(last_sent_tile_loads) == JSON.stringify(temp_tile_loads)){
-//         // Tile loads havent changed, do nothing,
-//     } else {
-//         // Tile loads have changed. Update the store, and send the data.
-//         last_sent_tile_loads = Object.assign({},tile_loads);
-
-//         // Send!
-
-//         $.ajax({
-//             type: "PUT",
-//             url: "https://api.v2.sondehub.org/tiles/count",
-//             contentType: "application/json; charset=utf-8",
-//             dataType: "json",
-//             data: JSON.stringify({'client': clientID, 'tile_loads': last_sent_tile_loads}),
-//         });
-//     }
-
-// }, 60000)
-
-
-
-
-
 
 // set map if in memory
 var maplayer = offline.get("map")

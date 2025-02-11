@@ -136,14 +136,6 @@ ChaseCar.markRecovered = function(){
         "description": _notes
     };
 
-    // Yes this is not the right way to do this...
-    // .. but it adds an extra bit of check.
-    var res = grecaptcha.getResponse();
-    if (res == "" || res == undefined || res.length == 0)
-    {
-        $('#pr_last_report').text("Do Recaptcha first!");
-        return;
-    }
 
     $('#pr_last_report').text("Submitting report...");
 

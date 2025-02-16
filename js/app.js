@@ -486,20 +486,22 @@ var format_time_friendly = function(start, end) {
 var format_coordinates = function(lat, lon, name) {
     var coords_text;
     var ua =  navigator.userAgent.toLowerCase();
-  
+    var span = document.createElement('span')
+    var a = document.createElement("a")
+    span.appendChild(a)
     // determine how to link the coordinates to a native app, if on a mobile device
     if(ua.indexOf('iphone') > -1) {
-        coords_text = '<a href="maps://?q='+lat+','+lon+'">' +
-                      roundNumber(lat, 5) + ', ' + roundNumber(lon, 5) +'</a>';
+        a.href = 'maps://?q='+lat+','+lon
     } else if(ua.indexOf('android') > -1) {
-        coords_text = '<a href="geo:'+lat+','+lon+'?q='+lat+','+lon+'('+name+')">' +
-                      roundNumber(lat, 5) + ', ' + roundNumber(lon, 5) +'</a>';
+        a.href = 'geo:'+lat+','+lon+'?q='+lat+','+lon+'('+name+')'
     } else {
-        coords_text = '<a href="https://www.google.com/maps/search/?api=1&query='+lat+','+lon+'" target="_blank" rel="noopener noreferrer">' +
-            roundNumber(lat, 5) + ', ' + roundNumber(lon, 5) +'</a>';
+        a.href = 'https://www.google.com/maps/search/?api=1&query='+lat+','+lon
+        a.target="_blank"
+        a.rel="noopener noreferrer"
     }
+    a.innerText = roundNumber(lat, 5) + ', ' + roundNumber(lon, 5)
 
-    return coords_text;
+    return span.innerHTML;
 };
 
 // runs every second
@@ -684,9 +686,7 @@ $(window).ready(function() {
         } else {
             wvar.box = null
         }
-        console.log("aaa")
-        console.log(wvar.box)
-        console.log("bbbb")
+
         lhash_update(true);
         checkSize();
     });
@@ -748,6 +748,23 @@ $(window).ready(function() {
         // turning the switch on
         } else {
             e.removeClass('off').addClass('on');
+            // Remove any planned recovery check.
+            $("#sw_recovery_planned").removeClass('on').addClass('off');
+        }
+    });
+    // Logic to switch the recovery Planned button
+    $("#sw_recovery_planned").click(function() {
+        var e = $(this);
+
+        // turning the switch off
+        if(e.hasClass('on')) {
+            e.removeClass('on').addClass('off');
+
+        // turning the switch on
+        } else {
+            e.removeClass('off').addClass('on');
+            // Set recovery OK to false.
+            $("#sw_recovery_ok").removeClass('on').addClass('off');
         }
     });
     // Logic to switch the use car position button
@@ -768,11 +785,21 @@ $(window).ready(function() {
         callsign = $(this).val().trim();
         offline.set('callsign', callsign); // put in localStorage
         CHASE_listenerSent = false;
+        $('#recovery_callsign').val(callsign);
     });
+
+    $("#recovery_callsign").on('change keyup', function() {
+        callsign = $(this).val().trim();
+        offline.set('callsign', callsign); // put in localStorage
+        CHASE_listenerSent = false;
+        $('#cc_callsign').val(callsign);
+    });
+
 
     // load value from localStorage
     callsign = offline.get('callsign');
     $('#cc_callsign').val(callsign);
+    $('#recovery_callsign').val(callsign);
 
     // settings page
 

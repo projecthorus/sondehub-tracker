@@ -45,8 +45,8 @@ ChaseCar.updatePosition = function(callsign, position) {
 
 ChaseCar.markRecovered = function(){
 
-    // Distance limits reinstated 2021-12-04
-    _run_checks = true;
+    // Remove range checks - 2025-01-24
+    _range_check = false;
     _range_limit = 500000; // 200 km
 
     // Get the serial number to be marked recovered
@@ -55,15 +55,15 @@ ChaseCar.markRecovered = function(){
     _notes = $("#pr_notes").val().trim();
 
     // Check it exists.
-    if(_serial.includes("chase") && _run_checks){
+    if(_serial.includes("chase")){
         $('#pr_last_report').text("Invalid sonde callsign.");
         return;
     }
 
-    _callsign = $("#cc_callsign").val().trim();
+    _callsign = $("#recovery_callsign").val().trim();
     if (_callsign == "" || _callsign == undefined || _callsign.length == 0)
     {
-        $('#pr_last_report').text("Enter a callsign in the chase-car section above!");
+        $('#pr_last_report').text("Enter a callsign/name in the 'Recovered by' field!");
         return;
     }
 
@@ -109,7 +109,7 @@ ChaseCar.markRecovered = function(){
         // Calculate the distance from the sonde
         _lookangles = calculate_lookangles(_chaser, _sonde);
 
-        if( (_lookangles.range > _range_limit ) && _run_checks){
+        if( (_lookangles.range > _range_limit ) && _range_check){
             $('#pr_last_report').text("Outside distance limit (500km).");
             return;
         }
@@ -120,27 +120,25 @@ ChaseCar.markRecovered = function(){
         }
     }
 
+    // Logic to make recovery & planned mutually exclusive is in app.js
+    _recovered = $("#sw_recovery_ok").hasClass('on');
+    _planned = $("#sw_recovery_planned").hasClass('on');
+
 
     var _doc = {
         "serial": _serial,
         "lat": _recov_lat,
         "lon": _recov_lon,
         "alt": 0.0,
-        "recovered": $("#sw_recovery_ok").hasClass('on'),
+        "recovered": _recovered,
+        "planned": _planned,
         "recovered_by": _callsign,
         "description": _notes
     };
 
-    // Yes this is not the right way to do this...
-    // .. but it adds an extra bit of check.
-    var res = grecaptcha.getResponse();
-    if (res == "" || res == undefined || res.length == 0)
-    {
-        $('#pr_last_report').text("Do Recaptcha first!");
-        return;
-    }
 
     $('#pr_last_report').text("Submitting report...");
+
 
     $.ajax({
         type: "PUT",

@@ -174,7 +174,17 @@ function drawHistorical (data, station) {
             }
         }
 
-        var popup = L.popup();
+        var popup = new L.popup({ autoClose: false, closeOnClick: false }).setContent(serial);
+
+        if (!recovered) {
+            var marker = L.circleMarker([landing.lat, landing.lon], {fillColor: "white", color: iconColour, weight: 3, radius: 5, fillOpacity:1});
+        } else {
+            var marker = L.circleMarker([landing.lat, landing.lon], {fillColor: "grey", color: iconColour, weight: 3, radius: 5, fillOpacity:1});
+        }
+
+        marker.bindPopup(popup);
+
+        div = document.createElement('div');
 
         html = "<div style='line-height:16px;position:relative;'>";
         html += "<div>"+serial+" <span style=''>("+time+")</span></div>";
@@ -187,40 +197,60 @@ function drawHistorical (data, station) {
 
         html += "<div><b>Altitude:&nbsp;</b>"+text_alt+"</div>";
         html += "<div><b>Time:&nbsp;</b>"+formatDate(stringToDateUTC(time))+"</div>";
-
-        if (landing.hasOwnProperty("type")) {
-            html += "<div><b>Sonde Type:&nbsp;</b>" + landing.type + "</div>";
-        };
+        html += "<div><b>Sonde Type:&nbsp;</b><span class='landing_sonde_type'>Unknown</span></div>"
 
         html += "<hr style='margin:0px;margin-top:5px'>";
 
-        if (recovered) {
-            html += "<div><b>"+(recovery_info.recovered ? "Recovered by " : "Not Recovered by ")+recovery_info.recovered_by+"</u></b></div>";
-            html += "<div><b>Recovery time:&nbsp;</b>"+formatDate(stringToDateUTC(recovery_info.datetime))+"</div>";
-            html += "<div><b>Recovery location:&nbsp;</b>"+recovery_info.position[1]+", "+recovery_info.position[0] + "</div>";
-            html += "<div><b>Recovery notes:&nbsp;</b>"+recovery_info.description+"</div>";
+        html += "<div class='recovery_section' style='line-height:16px;position:relative;'>";
+        html += "<div><b class='recovery_text'></b></div>";
+        html += "<div><b>Reported at:&nbsp;</b><span class='recovery_time'></span></div>";
+        html += "<div><b>Reported by:&nbsp;</b><span class='recovery_by'></span></div>";
+        html += "<div><b>Notes:&nbsp;</b><span class='recovery_desc'></span></div>";
+        html += "<hr style='margin:0px;margin-top:5px'>";
+        html += "</div>";
 
-            html += "<hr style='margin:0px;margin-top:5px'>";
-        }
-
-        html += "<div><b>Show Full Flight Path: <b><a href=\"javascript:showRecoveredMap('" + serial + "')\">" + serial + "</a></div>";
+        html += "<div><b>Show Full Flight Path:&nbsp;</b><a href='#' class='recovery_path'></a></div>";
 
         html += "<hr style='margin:0px;margin-top:5px'>";
         html += "<div style='font-size:11px;'>"
+        html += "<div><b><span class='landing_uploader_callsign'></span></b></div>"
+        html += "</div>";
 
-        if (landing.hasOwnProperty("uploader_callsign")) {
-            html += "<div>Last received by: " + landing.uploader_callsign.toLowerCase() + "</div>";
-        };
+        div.innerHTML = html;
 
-        popup.setContent(html);
 
-        if (!recovered) {
-            var marker = L.circleMarker([landing.lat, landing.lon], {fillColor: "white", color: iconColour, weight: 3, radius: 5, fillOpacity:1});
-        } else {
-            var marker = L.circleMarker([landing.lat, landing.lon], {fillColor: "grey", color: iconColour, weight: 3, radius: 5, fillOpacity:1});
+        div.getElementsByClassName("recovery_path")[0].textContent = serial
+        div.getElementsByClassName("recovery_path")[0].onclick = function(){
+          showRecoveredMap(serial)
         }
 
-        marker.bindPopup(popup);
+        if (landing.hasOwnProperty("type")) {
+            div.getElementsByClassName("landing_sonde_type")[0].textContent = landing.type;
+        };
+
+        if (landing.hasOwnProperty("uploader_callsign")) {
+            div.getElementsByClassName("landing_uploader_callsign")[0].textContent = "Last received by: " + landing.uploader_callsign.toLowerCase();
+        };
+
+        if (recovered) {
+            _recovered_text = recovery_info.recovered ? " Recovered" : "Not Recovered";
+
+            // Override text is planned field exists and is true
+            if(recovery_info.hasOwnProperty('planned')){
+              if(recovery_info.planned == true){
+                  _recovered_text = " Recovery Planned";
+              }
+            }
+            div.getElementsByClassName("recovery_text")[0].textContent = recovery_info.serial + _recovered_text;
+            div.getElementsByClassName("recovery_time")[0].textContent = formatDate(stringToDateUTC(recovery_info.datetime));
+            div.getElementsByClassName("recovery_by")[0].textContent = recovery_info.recovered_by;
+            div.getElementsByClassName("recovery_desc")[0].textContent = recovery_info.description;
+        } else {
+            div.getElementsByClassName("recovery_section")[0].style.display = "none";
+        }
+
+        popup.setContent(div);
+
 
         marker.addTo(map);
         marker.bringToBack();
@@ -917,6 +947,7 @@ function generateLaunchSites() {
             }
                 
             popupContent += "<br><b>Know when this site launches?</b> Contribute <a href='" + popupLink + "' target='_blank'>here</a>";
+            popupContent += "<br><b>Site Code:</b> " + key;
 
             // Generate view historical button
             popupContent += "<br><button id='historicalButton' onclick='historicalLaunchViewer(\"" + key + "\", \"" + launches.getLayerId(marker) + "\")' style='margin-bottom:0;'>Historical</button><img id='historicalButtonLoading' style='width:60px;height:20px;display:none;' src='img/hab-spinner.gif' />";

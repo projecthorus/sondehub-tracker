@@ -28,7 +28,6 @@
         <link rel="stylesheet" href="css/leaflet.fullscreen.css"/>
         <link rel="stylesheet" href="css/skewt.css"/>
 
-        <script type="text/javascript" language="javascript" src="https://www.google.com/recaptcha/api.js" async defer></script>
         <script type="text/javascript" language="javascript" src="js/skewt.js?v={VER}"></script>
         <script type="text/javascript" language="javascript" src="js/aws-sdk-2.1029.0.min.js"></script>
         <script type="text/javascript" language="javascript" src="js/leaflet.js?v={VER}"></script>
@@ -89,16 +88,64 @@
 
     <div id="recoveriesbox" style="display: none" class="flatpage">
         <div class="slimContainer">
-            <h2><i class="icon-habhub rfloat"></i>Recoveries</h2>
+            <h3><i class="icon-habhub rfloat"></i>Report Recovery</h3>
             <hr/>
-            <p>Recovery reports can be added on the Chase-Car pane.</p>
+            <div class="row">            
+            <span><b>Please report recovered radiosondes! Don't waste others time and effort with a frustrating failed recovery!</b></span>
+            <span>Enter the serial number, select recovered / planned, and add some notes. If marking as planned, please add contact information!</span>
+            <span>If the sonde is not on the map, type its serial into the top-left search box (may require landscape mode on mobile) and press enter to retrieve historical data.</span>
+            </div>
+            <div class="row">
+                <span><b>Serial</b> <a href="https://github.com/projecthorus/sondehub-infra/wiki/Radiosonde-Serial-Numbers" target="_blank" rel="noopener">(Help)</a></span>
+                <span class="r"><input type="text" id="pr_serial" style="width: 140px;"/></span>
+            </div>
+            <div class="row">
+                <span><b>Recovered By</b></span>
+                <span class="r"><input type="text" id="recovery_callsign" style="width: 140px;" maxlength="15"/></span>
+            </div>
+            <div class="row option">
+                <span><b>Recovery Success</b></span>
+                <div class="switchyn on" id="sw_recovery_ok">
+                    <span class="thumb"></span>
+                    <input type="checkbox" id="recovery_ok">
+                </div>
+            </div>
+            <div class="row option">
+                <span><b>Recovery Planned</b></span>
+                <div class="switchyn off" id="sw_recovery_planned">
+                    <span class="thumb"></span>
+                    <input type="checkbox" id="recovery_planned">
+                </div>
+            </div>
+            <div class="row option">
+                <span><b>Use Browser Position</b></span>
+                <div class="switch off" id="sw_use_car_pos">
+                    <span class="thumb"></span>
+                    <input type="checkbox" id="use_car_pos">
+                </div>
+            </div>
+            <div class="row">
+                <span><b>Notes</b></span>
+            </div>
+            <div class="row">
+                <span>
+                    <textarea name="pr_notes" id="pr_notes" style="width:280px;height:60px;"></textarea>
+                </span>
+            </div>
+            <div class="row">
+                <span><b>Report Result</b></span>
+                <span class="r" id="pr_last_report">none</span>
+            </div>
+            <div class="row">
+                <span class="r"><input type="button" value="Submit" id="pr_submit" onclick="ChaseCar.markRecovered();"/></span>
+            </div>
             <hr/>
-            <div id="recovery-list"><img style="width:90px;height:30px;display:block;margin:auto;" src="img/hab-spinner.gif"/><br></div>
-        </div>
-        <div class="slimContainer">
-            <h2>Statistics</h2>
+            <h3>Statistics</h3>
             <hr/>
             <div id="leaderboard-list"><img style="width:90px;height:30px;display:block;margin:auto;" src="img/hab-spinner.gif"/><br></div>
+            <hr/>
+            <h3>Recoveries</h3>
+            <div id="recovery-list"><img style="width:90px;height:30px;display:block;margin:auto;" src="img/hab-spinner.gif"/><br></div>
         </div>
     </div>
     <div id="aboutbox" style="display: none" class="flatpage">
@@ -119,7 +166,7 @@
                 <br/>
                 
                 <h4>Found a Radiosonde?</h4>
-                Click the 'car' icon on the top-right to submit a recovery notification.
+                <b>Please click the 'balloon' icon on the top-right to submit a recovery notification!</b>
 
                 <h4>Support Us!</h4>
                 If you use SondeHub regularly, please consider <a href="https://www.patreon.com/sondehub" target="_blank" rel="noopener">supporting us on Patreon</a>, or with a <a href="https://sondehub.org/go/donate" target="_blank" rel="noopener">donation on Paypal</a>.</br>
@@ -351,48 +398,7 @@
                 <span class="r" id="cc_speed">none</span>
             </div>
             <hr>
-            <h3>Report Recovery</h3>
-            <hr>
-            <div class="row">
-            <span>You can report a recovery here. Enter the serial number (e.g. 'S1234567'), tick recovered/not recovered, and add some notes. <a href="https://github.com/projecthorus/sondehub-infra/wiki/Radiosonde-Serial-Numbers" target="_blank" rel="noopener">Click here</a> for information on how to locate a sonde's serial number.</a> If the sonde is not on the map, type its serial into the top-left search box and press enter to retrieve historical data. You can then mark it as recovered. Optionally, you can use your location instead of the sonde's last location.</span>
-            </div>
-            <div class="row">
-                <span><b>Serial</b></span>
-                <span class="r"><input type="text" id="pr_serial" style="width: 140px;"/></span>
-            </div>
-            <div class="row option">
-                <span><b>Recovery Success</b></span>
-                <div class="switchyn on" id="sw_recovery_ok">
-                    <span class="thumb"></span>
-                    <input type="checkbox" id="recovery_ok">
-                </div>
-            </div>
-            <div class="row option">
-                <span><b>Use Car Position</b></span>
-                <div class="switch off" id="sw_use_car_pos">
-                    <span class="thumb"></span>
-                    <input type="checkbox" id="use_car_pos">
-                </div>
-            </div>
-            <div class="row">
-                <span><b>Notes</b></span>
-            </div>
-            <div class="row">
-                <span>
-                    <!--<input type="text" id="pr_notes" style="width: 140px;"/>-->
-                    <textarea name="pr_notes" id="pr_notes" style="width:280px;height:60px;"></textarea>
-                </span>
-            </div>
-            <div class="row">
-                <span><b>Report Result</b></span>
-                <span class="r" id="pr_last_report">none</span>
-            </div>
-            <div class="row">
-                <div class="g-recaptcha" data-sitekey="6LcEkBUbAAAAABTgn2lktm6UPeP0lbyqIDBBujSF"></div>
-            </div>
-            <div class="row">
-                <span class="r"><input type="button" value="Submit" id="pr_submit" onclick="ChaseCar.markRecovered();"/></span>
-            </div>
+            Recovery reporting is now on the recoveries tab! (Balloon icon)
 
         </div>
     </div>
@@ -401,6 +407,9 @@
         <div style="width: 100%;">
             <div id="zoom_warning" class="lfloat slickbox" style="width:250px; bottom: 0px;   left: 50%; transform: translate(-50%, -50%);">
                 <div style="width:250px">Zoom in for realtime data!</div>
+            </div>
+            <div id="recovery_notice" class="lfloat slickbox" onclick="show_recoveries();" style="width:225px; bottom: 35px; left: 50%; transform: translate(-50%, -50%); display:none;">
+                <div style="width:225px"><b>Please report recovered sondes!</b></div>
             </div>
         </div>
         <div id="timebox" class="present slickbox animate" style="display: none">
@@ -441,8 +450,8 @@
         </div>
     </div>
 
-    <div id="reload_warning">This version of SondeHub is out of date. <a href="javascript:window.location.reload(true)">Click here to reload</a>. Page will reload automatically in <span id="reload_timer"></span>
-    </div>
+    <div id="reload_warning">This version of SondeHub is out of date. <a href="javascript:window.location.reload(true)">Click here to reload</a>. Page will reload automatically in <span id="reload_timer"></span></div>
+
 
     <!-- Was 3.31-->
 

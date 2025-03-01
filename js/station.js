@@ -705,6 +705,7 @@ function launchSitePredictions(times, station, properties, marker, id) {
     }
 }
 
+//VK6DI Changes
 function plotPrediction (data, dates, marker, properties) {
     if (!launchPredictions.hasOwnProperty(marker)) {
         launchPredictions[marker] = {};
@@ -768,15 +769,24 @@ function plotPrediction (data, dates, marker, properties) {
         icon: new L.NumberedDivIcon({number: dates.indexOf(data.request.launch_datetime)+1})
     }).addTo(map);
 
+    var coords_text = format_coordinates(landingPoint.latitude, landingLongitude, "Prediction");
+
     var landingTime = new Date(landingPoint.datetime);
     if (properties[3] != "" && properties[4] != "") {
         var landingTooltip = "<b>Time:</b> " + landingTime.toLocaleString() + "<br><b>Model Dataset:</b> " + data.request.dataset + 
+        "<br><b>Prediction:</b> " + coords_text + 
         "<br><b>Model Assumptions:</b><br>- " + data.request.ascent_rate + "m/s ascent<br>- " + data.request.burst_altitude + "m burst altitude (" + properties[3] + " samples)<br>- " + data.request.descent_rate + "m/s descent (" + properties[4] + " samples)";
     } else {
         var landingTooltip = "<b>Time:</b> " + landingTime.toLocaleString() + "<br><b>Model Dataset:</b> " + data.request.dataset + 
+        "<br><b>Prediction:</b>" + coords_text + 
         "<br><b>Model Assumptions:</b><br>- " + data.request.ascent_rate + "m/s ascent<br>- " + data.request.burst_altitude + "m burst altitude<br>- " + data.request.descent_rate + "m/s descent";
     }
-    plot.landingMarker.bindTooltip(landingTooltip, {offset: [13,-28]});
+ 
+    plot.landingMarker.bindPopup(landingTooltip, { autoClose: false, closeOnClick: false })
+    .on('click', function (e) {
+        this.openPopup();
+    });
+
 }
 
 function showPrediction(url) {

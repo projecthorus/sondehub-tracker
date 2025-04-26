@@ -4765,6 +4765,13 @@ function updateRecoveryMarker(recovery) {
         _recovery_icon = host_url + markers_url + "payload-not-recovered.png";
       }
 
+    // Override icon if 'is planned' field exists and is true
+        if(recovery.hasOwnProperty('planned')){
+            if(recovery.planned == true){
+                _recovery_icon = host_url + markers_url + "payload-recovery-planned.png";
+            }
+      }
+
       recoveryIcon = new L.icon({
         iconUrl: _recovery_icon,
         iconSize: [17, 19],

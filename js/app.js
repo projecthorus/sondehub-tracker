@@ -355,89 +355,83 @@ var positionUpdateHandle = function(position) {
         }
     }
 
-    //navigator.geolocation.getCurrentPosition(function(position) {
-        var lat = position.coords.latitude;
-        var lon = position.coords.longitude;
-        var alt = (position.coords.altitude) ? position.coords.altitude : 0;
-        var accuracy = (position.coords.accuracy) ? position.coords.accuracy : 0;
-        var speed = (position.coords.speed) ? position.coords.speed : 0;
+    var lat = position.coords.latitude;
+    var lon = position.coords.longitude;
+    var alt = (position.coords.altitude) ? position.coords.altitude : 0;
+    var accuracy = (position.coords.accuracy) ? position.coords.accuracy : 0;
+    var speed = (position.coords.speed) ? position.coords.speed : 0;
 
-        // constantly update 'last updated' field, and display friendly time since last update
-        if(!GPS_ts) {
-            GPS_ts = parseInt(position.timestamp/1000);
+    // constantly update 'last updated' field, and display friendly time since last update
+    if(!GPS_ts) {
+        GPS_ts = parseInt(position.timestamp/1000);
 
-            setInterval(function() {
-                var delta_ts = parseInt(Date.now()/1000) - GPS_ts;
+        setInterval(function() {
+            var delta_ts = parseInt(Date.now()/1000) - GPS_ts;
 
-                // generate friendly timestamp
-                var hours = Math.floor(delta_ts / 3600);
-                var minutes = Math.floor(delta_ts / 60) % 60;
-                var ts_str = (delta_ts >= 60) ?
-                                    ((hours)?hours+'h ':'') +
-                                    ((minutes)?minutes+'m':'') +
-                                    ' ago'
-                                : 'just now';
-                $('#cc_timestamp').text(ts_str);
-            }, 30000);
+            // generate friendly timestamp
+            var hours = Math.floor(delta_ts / 3600);
+            var minutes = Math.floor(delta_ts / 60) % 60;
+            var ts_str = (delta_ts >= 60) ?
+                                ((hours)?hours+'h ':'') +
+                                ((minutes)?minutes+'m':'') +
+                                ' ago'
+                            : 'just now';
+            $('#cc_timestamp').text(ts_str);
+        }, 30000);
 
-            $('#cc_timestamp').text('just now');
-        }
+        $('#cc_timestamp').text('just now');
+    }
 
-        // save position and update only if different is available
-        if(CHASE_timer < (new Date()).getTime() &&
-           (
-           GPS_lat != lat ||
-           GPS_lon != lon ||
-           GPS_alt != alt ||
-           GPS_speed != speed
-           )
+    // save position and update only if different is available
+    if(CHASE_timer < (new Date()).getTime() &&
+        (
+        GPS_lat != lat ||
+        GPS_lon != lon ||
+        GPS_alt != alt ||
+        GPS_speed != speed
         )
-        {
-            GPS_lat = lat;
-            GPS_lon = lon;
-            GPS_alt = alt;
-            GPS_speed = speed;
-            GPS_ts = parseInt(position.timestamp/1000);
-            $('#cc_timestamp').text('just now');
+    )
+    {
+        GPS_lat = lat;
+        GPS_lon = lon;
+        GPS_alt = alt;
+        GPS_speed = speed;
+        GPS_ts = parseInt(position.timestamp/1000);
+        $('#cc_timestamp').text('just now');
 
-            // update look angles once we get position
-            if(follow_vehicle !== null && vehicles[follow_vehicle] !== undefined) {
-                update_lookangles(follow_vehicle);
-            }
-
-            if(CHASE_enabled) {
-                ChaseCar.updatePosition(callsign, position);
-                CHASE_timer = (new Date()).getTime() + 15000;
-            }
+        // update look angles once we get position
+        if(follow_vehicle !== null && vehicles[follow_vehicle] !== undefined) {
+            update_lookangles(follow_vehicle);
         }
-        else { return; }
 
-        // add/update marker on the map (sondehub.js)
-        updateCurrentPosition(lat, lon);
+        if(CHASE_enabled) {
+            ChaseCar.updatePosition(callsign, position);
+            CHASE_timer = (new Date()).getTime() + 15000;
+        }
+    }
 
-        // round the coordinates
-        lat = parseInt(lat * 10000)/10000;  // 4 decimal places (11m accuracy at equator)
-        lon = parseInt(lon * 10000)/10000;  // 4 decimal places
-        speed = parseInt(speed * 10)/10;        // 1 decimal place
-        accuracy = parseInt(accuracy);
-        alt = parseInt(alt);
 
-        // dispaly them in the top right corner
-        $('#app_name b').html(lat + '<br/>' + lon);
+    // add/update marker on the map (sondehub.js)
+    updateCurrentPosition(lat, lon);
 
-        // update chase car interface
-        $('#cc_lat').text(lat);
-        $('#cc_lon').text(lon);
-        $('#cc_alt').text(alt + " m");
-        $('#cc_accuracy').text(accuracy + " m");
-        $('#cc_speed').text(speed + " m/s");
-    /*
-    },
-    function() {
-        // when there is no location
-        $('#app_name b').html('mobile<br/>tracker');
-    });
-    */
+    // round the coordinates
+    lat = parseInt(lat * 10000)/10000;  // 4 decimal places (11m accuracy at equator)
+    lon = parseInt(lon * 10000)/10000;  // 4 decimal places
+    speed = parseInt(speed * 10)/10;        // 1 decimal place
+    accuracy = parseInt(accuracy);
+    alt = parseInt(alt);
+
+    // dispaly them in the top right corner
+    $('#app_name b').html(lat + '<br/>' + lon);
+
+    // update chase car interface
+    $('#cc_lat').text(lat);
+    $('#cc_lon').text(lon);
+    $('#cc_alt').text(alt + " m");
+    $('#cc_accuracy').text(accuracy + " m");
+    $('#cc_speed').text(speed + " m/s");
+        
+
 };
 
 var twoZeroPad = function(n) {
@@ -703,7 +697,6 @@ $(window).ready(function() {
             field.removeAttr('disabled');
             e.removeClass('on').addClass('off');
 
-            if(navigator.geolocation) navigator.geolocation.clearWatch(CHASE_enabled);
             CHASE_enabled = null;
             //CHASE_enabled = false;
 
@@ -731,8 +724,7 @@ $(window).ready(function() {
                 ChaseCar.updatePosition(callsign, { coords: { latitude: GPS_lat, longitude: GPS_lon, altitude: GPS_alt, speed: GPS_speed }});
             }
 
-            if(navigator.geolocation) CHASE_enabled = navigator.geolocation.watchPosition(positionUpdateHandle, positionUpdateError);
-            //CHASE_enabled = true;
+            CHASE_enabled = true;
 
             // hide the blue man
             if(currentPosition && currentPosition.marker) map.removeLayer(currentPosition.marker);
@@ -986,10 +978,7 @@ $(window).ready(function() {
         });
 
         navigator.geolocation.getCurrentPosition(positionUpdateHandle);
-        // check for location update every 30sec
-        //setInterval(positionUpdateHandle, 30000);
-        // immediatelly check for position
-        //positionUpdateHandle();
+        if(navigator.geolocation) navigator.geolocation.watchPosition(positionUpdateHandle, positionUpdateError);
     }
 
     // weather feature

@@ -4519,8 +4519,10 @@ function updateCurrentPosition(lat, lon) {
     } else {
       currentPosition.lat = lat;
       currentPosition.lon = lon;
-      currentPosition.marker.addTo(map);
-      currentPosition.marker.setLatLng(latlng);
+      if (!CHASE_enabled){
+        currentPosition.marker.addTo(map);
+        currentPosition.marker.setLatLng(latlng);
+      }
     }
 }
 

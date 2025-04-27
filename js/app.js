@@ -128,6 +128,7 @@ function load_hash(no_refresh) {
                 }
                 break;
             case "f":
+                v = v.toUpperCase();
                 refocus = (follow_vehicle != v);
                 follow_vehicle = v;
                 def.focus = v;
@@ -137,6 +138,7 @@ function load_hash(no_refresh) {
                 if(modeList.indexOf(def.mode) == -1) def.mode = (is_mobile) ? modeDefaultMobile : modeDefault;
                 break;
             case "q":
+                v = v.toUpperCase();
                 def.query = v;
                 $("header .search input[type='text']").val(v);
                 break;
@@ -1074,7 +1076,8 @@ $(window).ready(function() {
    $("header .search form").on('submit', function(e) {
        e.preventDefault();
 
-       var text = $("header .search input[type='text']").val();
+       var text = $("header .search input[type='text']").val().toUpperCase();
+       $("header .search input[type='text']")[0].value = text; // update field in case it wasn't already uppercase
 
        if(text === wvar.query) return;
 

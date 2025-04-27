@@ -705,7 +705,6 @@ function launchSitePredictions(times, station, properties, marker, id) {
     }
 }
 
-//VK6DI Changes
 function plotPrediction (data, dates, marker, properties) {
     if (!launchPredictions.hasOwnProperty(marker)) {
         launchPredictions[marker] = {};

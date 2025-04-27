@@ -868,10 +868,15 @@ function load() {
     L.control.status({ position: 'bottomright' }).addTo(map);
 
     // scale (would be better if integrated into attirbution bar)
-    L.control.scale({position:'bottomright', imperial:false}).addTo(map);
+    if (offline.get('opt_imperial')){
+        map_scale = L.control.scale({position:'bottomright', imperial:true, metric:false}).addTo(map);
+    } else {
+        map_scale = L.control.scale({position:'bottomright', imperial:false}).addTo(map);
+    }
+    
 
     // zoom controls
-    new L.Control.Zoom({ position: 'bottomright' }).addTo(map);
+    zoom_controls = new L.Control.Zoom({ position: 'bottomright' }).addTo(map);
 
     // map selector
     layers = L.control.layers(baseMaps, null, {position: "topleft"}).addTo(map);

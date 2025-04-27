@@ -850,6 +850,18 @@ $(window).ready(function() {
                 else focusVehicle(null, true);
                 break;
             case "opt_imperial":
+                if (map_scale){
+                    map_scale.remove()
+                }
+                // we need to remove and add the zoom controls so they  end up in the same position
+                zoom_controls.remove()
+                if (on) {
+                    map_scale = L.control.scale({position:'bottomright', imperial:true, metric:false}).addTo(map);
+                } else {
+                    map_scale = L.control.scale({position:'bottomright', imperial:false}).addTo(map);
+                }
+                zoom_controls.addTo(map);
+
             case "opt_haxis_hours":
                 refreshUI();
                 break;

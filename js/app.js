@@ -339,8 +339,7 @@ function positionUpdateError(error) {
     switch(error.code)
     {
         case error.PERMISSION_DENIED:
-            alert("no permission to use your location");
-            $('#sw_chasecar').click(); // turn off chase car
+            $('#sw_chasecar').removeClass('on').addClass('off');
             break;
         default:
         break;

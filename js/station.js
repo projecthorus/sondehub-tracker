@@ -632,26 +632,26 @@ function launchSitePredictions(times, station, properties, marker, id) {
                 var date = new Date();
                 var time = times[i].split(":");
                 if (time[0] != 0) {
-                    date.setDate(date.getDate() + (7 + time[0] - date.getDay()) % 7);
+                    date.setUTCDate(date.getUTCDate() + (7 + time[0] - date.getUTCDay()) % 7);
                 }
                 date.setUTCHours(time[1]);
                 date.setUTCMinutes(time[2]);
-                date.setSeconds(0);
-                date.setMilliseconds(0);
+                date.setUTCSeconds(0);
+                date.setUTCMilliseconds(0);
                 // launch time 45 minutes before target time
-                date.setMinutes( date.getMinutes() - 45 );
+                date.setUTCMinutes( date.getUTCMinutes() - 45 );
                 while (date < now) {
                     if (time[0] == 0) {
-                        date.setDate(date.getDate() + 1);
+                        date.setUTCDate(date.getUTCDate() + 1);
                     } else {
-                        date.setDate(date.getDate() + 7);
+                        date.setUTCDate(date.getUTCDate() + 7);
                     }
                 }
                 if (day > 0) {
                     if (time[0] == 0) {
-                        date.setDate(date.getDate() + day);
+                        date.setUTCDate(date.getUTCDate() + day);
                     } else {
-                        date.setDate(date.getDate() + (7*day));
+                        date.setUTCDate(date.getUTCDate() + (7*day));
                     }
                 }
                 if (count < maxCount) {

@@ -681,7 +681,7 @@ function throttle_events(event) {
 
 function sub_to_nearby_sondes(){
     let bounds = map.getBounds().pad(1); // expand by one viewport
-    let zoomed_out = map.getZoom() <= 6;
+    let zoomed_out = map.getZoom() <= 8;
     const sub_logging = false;
     if (zoomed_out){
         // If we are fairly zooomed out - only give the slow feed

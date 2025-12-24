@@ -180,3 +180,19 @@ header h1{
     border-width: 1px;
     display: none;
 }
+
+#banner {
+    display: none
+}
+@media only screen and (min-width: 768px){
+    #banner {
+        line-height: 1.1;
+        font-size: small;
+        display: block;
+        margin-left: 300px;
+        text-align: center;
+        overflow-y: auto;
+        font-weight: bold;
+        height: 100%;
+    }
+}

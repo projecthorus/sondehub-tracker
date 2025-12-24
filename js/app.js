@@ -1126,6 +1126,19 @@ function update_site(){
     window.location.reload(true)
 }
 
+function check_banner(){
+    const bannerRequest = new Request("https://api.v2.sondehub.org/banner");
+    fetch(bannerRequest)
+        .then(function(response){ return response.json()})
+        .then(function(response){
+            if (response['banner']) {
+                document.getElementsByTagName("header")[0].style.backgroundColor = "#ff6259"
+                document.getElementsByTagName("header")[0].style.borderColor = "#eb3d34"
+                document.getElementById("banner").innerText = response['banner']
+            }
+        })
+}
+
 function update_countdown(){
     var date = new Date(0);
     time_remaining = (reload_end_time - new Date().getTime())/1000
@@ -1135,6 +1148,7 @@ function update_countdown(){
 }
 
 check_version()
+check_banner()
 update_check = setInterval(check_version, 15 * 60 * 1000)
 load_hash();
 startAjax();

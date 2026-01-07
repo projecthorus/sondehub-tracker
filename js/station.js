@@ -957,6 +957,7 @@ function generateLaunchSites() {
                 
             popupContent += "<br><b>Know when this site launches?</b> Contribute <a href='" + popupLink + "' target='_blank'>here</a>";
             popupContent += "<br><b>Site Code:</b> " + key;
+            popupContent += "<br>Launch times are <a href='https://forecast.weather.gov/glossary.php?word=synop' target='_blank'>synoptic times</a>. Sonde launches may occur up to 1 hr prior to this."
 
             // Generate view historical button
             popupContent += "<br><button id='historicalButton' onclick='historicalLaunchViewer(\"" + key + "\", \"" + launches.getLayerId(marker) + "\")' style='margin-bottom:0;'>Historical</button><img id='historicalButtonLoading' style='width:60px;height:20px;display:none;' src='img/hab-spinner.gif' />";

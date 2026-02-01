@@ -1894,8 +1894,9 @@ function updateVehicleInfo(vcallsign, newPosition) {
                 }
             }
             if(newPosition.callsign[callsign].hasOwnProperty('frequency')){
-                if(newPosition.callsign[callsign].frequency){
-                    vehicle.receiver_info[i].frequency = newPosition.callsign[rxcall].frequency.toFixed(4)
+                const freq = Number(newPosition.callsign[rxcall].frequency);
+                if(!Number.isNaN(freq)){
+                    vehicle.receiver_info[i].frequency = freq.toFixed(4)
                 }
             }
             return
@@ -1913,8 +1914,9 @@ function updateVehicleInfo(vcallsign, newPosition) {
         }
     }
     if(newPosition.callsign[callsign].hasOwnProperty('frequency')){
-        if(newPosition.callsign[callsign].frequency){
-            temp_receiver.frequency = newPosition.callsign[rxcall].frequency.toFixed(4)
+        const freq = Number(newPosition.callsign[rxcall].frequency);
+        if(!Number.isNaN(freq)){
+            temp_receiver.frequency = freq.toFixed(4)
         }
     }
     vehicle.receiver_info[callsign] = temp_receiver;

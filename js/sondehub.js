@@ -998,27 +998,25 @@ function load() {
     map.on('zoomend', function() {
         sub_to_nearby_sondes();
         //do check for horizon labels
-        if (offline.get("opt_hide_horizon")) {
-            for (key in vehicles) {
-                if (vehicles[key]["vehicle_type"] == "balloon") {
-                    if (vehicles[key]["horizon_circle"]["_map"]) 
-                    {
-                        try {
-                            var zoom = map.getZoom();
-                            var horizonzoom = (Math.abs(Math.log(vehicles[key]["horizon_circle"].getRadius()/2000000)/0.75));
-                            var subhorizonzoom = (Math.abs(Math.log(vehicles[key]["subhorizon_circle"].getRadius()/2000000)/0.75));
-                            if (horizonzoom > zoom) {
-                                map.removeLayer(vehicles[key]["horizon_circle_title"]);
-                            } else {
-                                map.addLayer(vehicles[key]["horizon_circle_title"]);
-                            }
-                            if (subhorizonzoom > zoom) {
-                                map.removeLayer(vehicles[key]["subhorizon_circle_title"]);
-                            } else {
-                                map.addLayer(vehicles[key]["subhorizon_circle_title"]);
-                            }
-                        } catch(e){};
-                    }
+        for (key in vehicles) {
+            if (vehicles[key]["vehicle_type"] == "balloon") {
+                if (vehicles[key]["horizon_circle"]["_map"]) 
+                {
+                    try {
+                        var zoom = map.getZoom();
+                        var horizonzoom = (Math.abs(Math.log(vehicles[key]["horizon_circle"].getRadius()/2000000)/0.75));
+                        var subhorizonzoom = (Math.abs(Math.log(vehicles[key]["subhorizon_circle"].getRadius()/2000000)/0.75));
+                        if (horizonzoom > zoom) {
+                            map.removeLayer(vehicles[key]["horizon_circle_title"]);
+                        } else {
+                            map.addLayer(vehicles[key]["horizon_circle_title"]);
+                        }
+                        if (subhorizonzoom > zoom) {
+                            map.removeLayer(vehicles[key]["subhorizon_circle_title"]);
+                        } else {
+                            map.addLayer(vehicles[key]["subhorizon_circle_title"]);
+                        }
+                    } catch(e){};
                 }
             }
         }
@@ -1564,6 +1562,7 @@ function stopFollow(no_data_reset) {
 	if(follow_vehicle !== null) {
         if(!no_data_reset) {
             focusVehicle(null);
+            hideHorizonRings();
 
             // remove target mark
             $("#main .row.follow").removeClass("follow");
@@ -1612,6 +1611,7 @@ function followVehicle(vcallsign, noPan, force) {
 
 		follow_vehicle = vcallsign;
 		vehicles[follow_vehicle].follow = true;
+        updateHorizonVisibility();
 
         // add target mark
         $("#main .row.follow").removeClass("follow");
@@ -3307,12 +3307,7 @@ function addPosition(position) {
                 } else {
                     map.addLayer(vehicle.marker.shadow);
 
-                    if(!offline.get('opt_hide_horizon') == false){
-                        map.addLayer(vehicle.horizon_circle);
-                        map.addLayer(vehicle.subhorizon_circle);
-                        map.addLayer(vehicle.horizon_circle_title);
-                        map.addLayer(vehicle.subhorizon_circle_title);
-                    }
+                    updateHorizonVisibility();
 
                     if(mode == "parachute") {
                         img_src = recolorSVG(host_url + markers_url + "parachute.svg", this.balloonColor);
@@ -3384,11 +3379,6 @@ function addPosition(position) {
                 title: "Line-of-right (radio) horizon of the payload"
             });
 
-            if (offline.get("opt_hide_horizon")) {
-                horizon_circle.addTo(map);
-                horizon_circle_title.addTo(map);
-            }
-
             horizon_circle.on('move', function (e) {
                 try { 
                     var latlng = L.latLng(e.target.getBounds()._southWest.lat, ((e.target.getBounds()._northEast.lng + e.target.getBounds()._southWest.lng)/2));
@@ -3416,11 +3406,6 @@ function addPosition(position) {
                 interactive: true,
                 title: "Payload is greater than 5 degrees above the horizon within this circle, which indicates it should be fairly easily receivable."
             });
-
-            if (offline.get("opt_hide_horizon")) {
-                subhorizon_circle.addTo(map);
-                subhorizon_circle_title.addTo(map);
-            }
 
             subhorizon_circle.on('move', function (e) {
                 try { 
@@ -3587,6 +3572,7 @@ function addPosition(position) {
         }
         
         vehicles[vcallsign] = vehicle_info;    
+        updateHorizonVisibility();
     }
 
     var vehicle = vehicles[vcallsign];
@@ -5059,17 +5045,21 @@ function hideHorizonRings(){
     }
 }
 
-function showHorizonRings(){
-    for(var vcallsign in vehicles) {
-        if(vehicles[vcallsign].vehicle_type == "balloon"){
-            map.addLayer(vehicles[vcallsign].horizon_circle);
-            map.addLayer(vehicles[vcallsign].subhorizon_circle);
-            vehicles[vcallsign].horizon_circle.fire("move")
-            vehicles[vcallsign].subhorizon_circle.fire("move")
-            map.addLayer(vehicles[vcallsign].horizon_circle_title);
-            map.addLayer(vehicles[vcallsign].subhorizon_circle_title);
-        }
-    }
+function updateHorizonVisibility(){
+    // Only show horizon rings for the sonde we are currently 'following'
+    // (the last selected sonde)
+    hideHorizonRings();
+
+    if (follow_vehicle === null) return;
+    if (!vehicles.hasOwnProperty(follow_vehicle)) return;
+    if (vehicles[follow_vehicle].vehicle_type != "balloon") return;
+
+    map.addLayer(vehicles[follow_vehicle].horizon_circle);
+    map.addLayer(vehicles[follow_vehicle].subhorizon_circle);
+    vehicles[follow_vehicle].horizon_circle.fire("move");
+    vehicles[follow_vehicle].subhorizon_circle.fire("move");
+    map.addLayer(vehicles[follow_vehicle].horizon_circle_title);
+    map.addLayer(vehicles[follow_vehicle].subhorizon_circle_title);
 }
 
 function hideTitles(){

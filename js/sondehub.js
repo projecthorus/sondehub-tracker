@@ -3376,7 +3376,7 @@ function addPosition(position) {
             horizon_circle_title = new L.Marker(point, {
                 icon: horizon_circle_title_icon,
                 interactive: true,
-                title: "Line-of-right (radio) horizon of the payload"
+                title: "Line-of-sight (radio) horizon of the payload"
             });
 
             horizon_circle.on('move', function (e) {

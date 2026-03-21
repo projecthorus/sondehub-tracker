@@ -125,6 +125,14 @@ ChaseCar.markRecovered = function(){
     _planned = $("#sw_recovery_planned").hasClass('on');
 
 
+    // Only allow a planned recovery report if there is actually somethign in the report box...
+    if (_planned) {
+        if(_notes.length == 0){
+            $('#pr_last_report').text("Please enter a description of your recovery plans!");
+            return;
+        }
+    }
+
     var _doc = {
         "serial": _serial,
         "lat": _recov_lat,

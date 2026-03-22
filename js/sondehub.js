@@ -4075,6 +4075,9 @@ function liveData() {
         // and un-comment the 'Disable periodical listener refresh' lines further below.
         client.subscribe("listener/#");
 
+        // .. and to the recoveries
+        client.subscribe("recovery/#");
+
         clientConnected = true;
         $("#stText").text("websocket |");
     };
@@ -4171,6 +4174,17 @@ function liveData() {
                     }
                     pred_data[serial] = frame
                     updateLaunchPredictions(pred_data);
+                } else if (message.topic.startsWith("recovery")) {
+                    // Recovery reports get initialised on page load.
+                    // After this, we get recovery report updates via websockets.
+                    // Single recovery report via websockets
+                    var frame = JSON.parse(message.payloadString.toString());
+
+                    // Add this single recovery report to the map
+                    if(!offline.get('opt_hide_recoveries')) {
+                        updateRecoveries([frame], true);
+                    }
+
                 } else {
                     var frame = JSON.parse(message.payloadString.toString());
 
@@ -4752,76 +4766,77 @@ function updateReceivers(r, single) {
 function updateRecoveryMarker(recovery) {
     var latlng = new L.LatLng(recovery.lat, recovery.lon);
   
-    // init a marker if the recovered payload doesn't already have one
-    if(!recovery.marker) {
-      if(recovery.recovered == true){
-        _recovery_icon = host_url + markers_url + "payload-recovered.png";
-      }else{
-        _recovery_icon = host_url + markers_url + "payload-not-recovered.png";
-      }
+
+    // Remove any existing marker from the map
+    if(recovery.marker){
+        recovery.marker.remove();
+    }
+
+    // Generate a new marker and add it
+    if(recovery.recovered == true){
+    _recovery_icon = host_url + markers_url + "payload-recovered.png";
+    }else{
+    _recovery_icon = host_url + markers_url + "payload-not-recovered.png";
+    }
 
     // Override icon if 'is planned' field exists and is true
-        if(recovery.hasOwnProperty('planned')){
-            if(recovery.planned == true){
-                _recovery_icon = host_url + markers_url + "payload-recovery-planned.png";
-            }
-      }
-
-      recoveryIcon = new L.icon({
-        iconUrl: _recovery_icon,
-        iconSize: [17, 19],
-        iconAnchor: [8, 14],
-        popupAnchor: [0, -19]
-      });
-
-      recovery.marker = new L.Marker(latlng, {
-        icon: recoveryIcon,
-        title: recovery.serial,
-        zIndexOffset: Z_RECOVERY, 
-      }).addTo(map);
-
-      recovery.infobox = new L.popup({ autoClose: false, closeOnClick: false }).setContent(recovery.description);
-
-      recovery.marker.bindPopup(recovery.infobox);
-
-      div = document.createElement('div');
-
-      _recovered_text = recovery.recovered ? " Recovered" : " Not Recovered";
-
-      // Override text is planned field exists and is true
-      if(recovery.hasOwnProperty('planned')){
+    if(recovery.hasOwnProperty('planned')){
         if(recovery.planned == true){
-            _recovered_text = " Recovery Planned";
+            _recovery_icon = host_url + markers_url + "payload-recovery-planned.png";
         }
-      }
-
-      html = "<div style='line-height:16px;position:relative;'>";
-      html += "<div><b class='recovery_text'></b></div>";
-      html += "<hr style='margin:5px 0px'>";
-      html += "<div style='margin-bottom:5px;'><b><i class='icon-location'></i>&nbsp;</b>"+format_coordinates(recovery.lat, recovery.lon, recovery.serial)+"</div>";
-
-      html += "<div><b>Time:&nbsp;</b><span class='recovery_time'></span></div>";
-      html += "<div><b>Reported by:&nbsp;</b><span class='recovery_by'></span></div>";
-      html += "<div><b>Notes:&nbsp;</b><span class='recovery_desc'></span></div>";
-      html += "<div><b>Flight Path:&nbsp;</b><a href='#' class='recovery_path'></a></div>";
-
-      html += "</div>";
-
-      div.innerHTML = html;
-      div.getElementsByClassName("recovery_text")[0].textContent = recovery.serial+_recovered_text
-      div.getElementsByClassName("recovery_time")[0].textContent = formatDate(stringToDateUTC(recovery.datetime))
-      div.getElementsByClassName("recovery_by")[0].textContent = recovery.recovered_by
-      div.getElementsByClassName("recovery_desc")[0].textContent = recovery.description
-      div.getElementsByClassName("recovery_path")[0].textContent = recovery.serial
-      div.getElementsByClassName("recovery_path")[0].onclick = function(){
-        showRecoveredMap(recovery.serial)
-      }
-
-      recovery.infobox.setContent(div);
-
-    } else {
-      recovery.marker.setLatLng(latlng);
     }
+
+    recoveryIcon = new L.icon({
+    iconUrl: _recovery_icon,
+    iconSize: [17, 19],
+    iconAnchor: [8, 14],
+    popupAnchor: [0, -19]
+    });
+
+    recovery.marker = new L.Marker(latlng, {
+    icon: recoveryIcon,
+    title: recovery.serial,
+    zIndexOffset: Z_RECOVERY, 
+    }).addTo(map);
+
+    recovery.infobox = new L.popup({ autoClose: false, closeOnClick: false }).setContent(recovery.description);
+
+    recovery.marker.bindPopup(recovery.infobox);
+
+    div = document.createElement('div');
+
+    _recovered_text = recovery.recovered ? " Recovered" : " Not Recovered";
+
+    // Override text is planned field exists and is true
+    if(recovery.hasOwnProperty('planned')){
+    if(recovery.planned == true){
+        _recovered_text = " Recovery Planned";
+    }
+    }
+
+    html = "<div style='line-height:16px;position:relative;'>";
+    html += "<div><b class='recovery_text'></b></div>";
+    html += "<hr style='margin:5px 0px'>";
+    html += "<div style='margin-bottom:5px;'><b><i class='icon-location'></i>&nbsp;</b>"+format_coordinates(recovery.lat, recovery.lon, recovery.serial)+"</div>";
+
+    html += "<div><b>Time:&nbsp;</b><span class='recovery_time'></span></div>";
+    html += "<div><b>Reported by:&nbsp;</b><span class='recovery_by'></span></div>";
+    html += "<div><b>Notes:&nbsp;</b><span class='recovery_desc'></span></div>";
+    html += "<div><b>Flight Path:&nbsp;</b><a href='#' class='recovery_path'></a></div>";
+
+    html += "</div>";
+
+    div.innerHTML = html;
+    div.getElementsByClassName("recovery_text")[0].textContent = recovery.serial+_recovered_text
+    div.getElementsByClassName("recovery_time")[0].textContent = formatDate(stringToDateUTC(recovery.datetime))
+    div.getElementsByClassName("recovery_by")[0].textContent = recovery.recovered_by
+    div.getElementsByClassName("recovery_desc")[0].textContent = recovery.description
+    div.getElementsByClassName("recovery_path")[0].textContent = recovery.serial
+    div.getElementsByClassName("recovery_path")[0].onclick = function(){
+    showRecoveredMap(recovery.serial)
+    }
+
+    recovery.infobox.setContent(div);
   }
   
   function updateRecoveries(r, single=false) {

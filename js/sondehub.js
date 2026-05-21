@@ -1746,7 +1746,7 @@ function updateVehicleInfo(vcallsign, newPosition) {
     // We might be able to pull out an estimate of landing ground level from the last position in the latest prediction?
     var landed = (
                      vehicle.max_alt > 1500 &&      // if it has gone up
-                     vehicle.ascent_rate < 1.0 &&   // and has negative ascent_rate, aka is descending
+                     vehicle.ascent_rate < 1.0 &&   // and has low/negative ascent_rate, aka is descending
                      newPosition.gps_alt < 350      // and is under 350 meters altitude
                  ) || (                             // or
                      newPosition.gps_alt < 600 &&   // under 600m and has no position update for more than 30 minutes
@@ -1756,7 +1756,9 @@ function updateVehicleInfo(vcallsign, newPosition) {
 
     if(landed) {
         vehicle.marker.setMode("landed");
-    } else if(vehicle.ascent_rate > -3.0) {
+    } else if(vehicle.ascent_rate > -1.5) {
+        // Was -3.0 m/s, but this doesn't catch some slowly descending sonded under larger parachutes.
+        // Now trying -1.5 m/s
         vehicle.marker.setMode("balloon");
     } else {
         vehicle.marker.setMode("parachute");

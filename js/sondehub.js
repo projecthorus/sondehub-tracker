@@ -4615,8 +4615,7 @@ function updateChase(r) {
                         dataTempEntry.gps_lon = last.uploader_position[1];
                         dataTempEntry.gps_heading = 90;
                         var date = new Date(last.ts)
-                        var userTimezoneOffset = date.getTimezoneOffset() * 60000;
-                        var time = new Date(date.getTime() - userTimezoneOffset).toISOString();
+                        var time = new Date(date.getTime()).toISOString();
                         dataTempEntry.gps_time = time;
                         dataTempEntry.server_time = time;
                         dataTempEntry.vehicle = last.uploader_callsign + "_chase";

@@ -141,7 +141,8 @@ ChaseCar.markRecovered = function(){
         "recovered": _recovered,
         "planned": _planned,
         "recovered_by": _callsign,
-        "description": _notes
+        "description": _notes,
+        "recovery_software": "Sondehub Tracker"
     };
 
 

@@ -1006,6 +1006,7 @@ function load() {
                         var zoom = map.getZoom();
                         var horizonzoom = (Math.abs(Math.log(vehicles[key]["horizon_circle"].getRadius()/2000000)/0.75));
                         var subhorizonzoom = (Math.abs(Math.log(vehicles[key]["subhorizon_circle"].getRadius()/2000000)/0.75));
+                        var subsubhorizonzoom = (Math.abs(Math.log(vehicles[key]["subsubhorizon_circle"].getRadius()/2000000)/0.75));
                         if (horizonzoom > zoom) {
                             map.removeLayer(vehicles[key]["horizon_circle_title"]);
                         } else {
@@ -1013,8 +1014,9 @@ function load() {
                         }
                         if (subhorizonzoom > zoom) {
                             map.removeLayer(vehicles[key]["subhorizon_circle_title"]);
+                            map.removeLayer(vehicles[key]["subsubhorizon_circle_title"]);
                         } else {
-                            map.addLayer(vehicles[key]["subhorizon_circle_title"]);
+                            map.addLayer(vehicles[key]["subsubhorizon_circle_title"]);
                         }
                     } catch(e){};
                 }
@@ -1542,7 +1544,9 @@ function focusVehicle(vcallsign, ignoreOpt) {
                 if(vehicle.horizon_circle) vehicle.horizon_circle.setStyle({opacity:opacityFocused * 0.6});
                 if(vehicle.horizon_circle_title) vehicle.horizon_circle_title.setOpacity(opacityFocused * 0.8);
                 if(vehicle.subhorizon_circle) vehicle.subhorizon_circle.setStyle({opacity:opacityFocused * 0.8});
+                if(vehicle.subsubhorizon_circle) vehicle.subsubhorizon_circle.setStyle({opacity:opacityFocused * 0.8});
                 if(vehicle.subhorizon_circle_title) vehicle.subhorizon_circle_title.setOpacity(opacityFocused * 0.8);
+                if(vehicle.subsubhorizon_circle_title) vehicle.subsubhorizon_circle_title.setOpacity(opacityFocused * 0.8);
                 for(j in vehicle.polyline) vehicle.polyline[j].setStyle({opacity:opacityFocused});
             }
             else {
@@ -1550,6 +1554,8 @@ function focusVehicle(vcallsign, ignoreOpt) {
                 if(vehicle.horizon_circle_title) vehicle.horizon_circle_title.setOpacity(opacityOther * 0.6);
                 if(vehicle.subhorizon_circle) vehicle.subhorizon_circle.setStyle({opacity:opacityOther * 0.8});
                 if(vehicle.subhorizon_circle_title) vehicle.subhorizon_circle_title.setOpacity(opacityOther * 0.8);
+                if(vehicle.subsubhorizon_circle) vehicle.subsubhorizon_circle.setStyle({opacity:opacityOther * 0.8});
+                if(vehicle.subsubhorizon_circle_title) vehicle.subsubhorizon_circle_title.setOpacity(opacityOther * 0.8);
                 for(j in vehicle.polyline) vehicle.polyline[j].setStyle({opacity:opacityOther});
             }
         }
@@ -1727,18 +1733,31 @@ function updateVehicleInfo(vcallsign, newPosition) {
         var h = parseFloat(newPosition.gps_alt); // height above ground
 
         var elva = el * DEG_TO_RAD;
+        var subelva = 10 * DEG_TO_RAD;
         var slant = EARTH_RADIUS*(Math.cos(Math.PI/2+elva)+Math.sqrt(Math.pow(Math.cos(Math.PI/2+elva),2)+h*(2*EARTH_RADIUS+h)/Math.pow(EARTH_RADIUS,2)));
+        var subslant = EARTH_RADIUS*(Math.cos(Math.PI/2+subelva)+Math.sqrt(Math.pow(Math.cos(Math.PI/2+subelva),2)+h*(2*EARTH_RADIUS+h)/Math.pow(EARTH_RADIUS,2)));
+
         var subhorizon_km = Math.acos((Math.pow(EARTH_RADIUS,2)+Math.pow(EARTH_RADIUS+h,2)-Math.pow(slant,2))/(2*EARTH_RADIUS*(EARTH_RADIUS+h)))*EARTH_RADIUS;
+        var subsubhorizon_km = Math.acos((Math.pow(EARTH_RADIUS,2)+Math.pow(EARTH_RADIUS+h,2)-Math.pow(subslant,2))/(2*EARTH_RADIUS*(EARTH_RADIUS+h)))*EARTH_RADIUS;
 
         vehicle.subhorizon_circle.setRadius(Math.round(subhorizon_km));
         vehicle.subhorizon_circle.setLatLng(latlng);
+        
+        vehicle.subsubhorizon_circle.setRadius(Math.round(subsubhorizon_km));
+        vehicle.subsubhorizon_circle.setLatLng(latlng);
 
         subhorizon_circle_title_icon = new L.DivIcon({
             className: "subhorizon_circle_title",
             html: '<span style="position:relative;left:-50%;top:-5px;color:black;border:1px solid rgb(0, 255, 0);border-radius:5px;font-size:9px;padding:2px;background-color:white;">' + Math.round(subhorizon_km/1000) + 'km</span>'
         });
 
+        subsubhorizon_circle_title_icon = new L.DivIcon({
+            className: "subhorizon_circle_title",
+            html: '<span style="position:relative;left:-50%;top:-5px;color:black;border:1px solid rgb(0, 255, 0);border-radius:5px;font-size:9px;padding:2px;background-color:white;">' + Math.round(subsubhorizon_km/1000) + 'km</span>'
+        });
+
         vehicle.subhorizon_circle_title.setIcon(subhorizon_circle_title_icon);
+        vehicle.subsubhorizon_circle_title.setIcon(subsubhorizon_circle_title_icon);
     }
 
     // indicates whenever a payload has landed
@@ -3175,6 +3194,7 @@ function addPosition(position) {
         var vehicle_type = "";
         var horizon_circle = null;
         var subhorizon_circle = null;
+        var subsubhorizon_circle = null;
         var point = new L.LatLng(position.gps_lat, position.gps_lon);
         var image_src = "", image_src_size, image_src_offset;
         var color_index = 0;
@@ -3182,6 +3202,7 @@ function addPosition(position) {
         var polyline_visible = false;
         var horizon_circle_title = null;
         var subhorizon_circle_title = null;
+        var subsubhorizon_circle_title = null;
         if(vcallsign.search(/(chase)/i) != -1) {
             if (offline.get("opt_hide_chase") ){
                 return
@@ -3297,8 +3318,10 @@ function addPosition(position) {
                     map.removeLayer(vehicle.marker.shadow);
                     map.removeLayer(vehicle.horizon_circle);
                     map.removeLayer(vehicle.subhorizon_circle);
+                    map.removeLayer(vehicle.subsubhorizon_circle);
                     map.removeLayer(vehicle.horizon_circle_title);
                     map.removeLayer(vehicle.subhorizon_circle_title);
+                    map.removeLayer(vehicle.subsubhorizon_circle_title);
                     img_src = recolorSVG(host_url + markers_url + "payload.svg", this.balloonColor);
                     img = new L.icon ({
                         iconUrl: img_src,
@@ -3415,6 +3438,35 @@ function addPosition(position) {
                     subhorizon_circle_title.setLatLng(latlng);
                 } catch (err) {}
             });  
+
+
+            subsubhorizon_circle = new L.Circle(point, {
+                zIndexOffset: Z_RANGE,
+                radius: 1,
+                color: 'rgb(179, 0, 255)',
+                fillColor: 'rgb(179, 0, 255)',
+                fillOpacity: 0,
+                opacity: 0.8,
+                interactive: false,
+            });
+
+            subsubhorizon_circle_title_icon = new L.DivIcon({
+                className: "subhorizon_circle_title",
+                html: '<span style="position:relative;left:-50%;top:-5px;color:black;border:1px solid rgb(0, 255, 0);border-radius:5px;font-size:9px;padding:2px;background-color:white;">km</span>',
+            });
+
+            subsubhorizon_circle_title = new L.Marker(point, {
+                icon: subsubhorizon_circle_title_icon,
+                interactive: true,
+                title: "Payload is greater than 5 degrees above the horizon within this circle, which indicates it should be fairly easily receivable."
+            });
+
+            subsubhorizon_circle.on('move', function (e) {
+                try { 
+                    var latlng = L.latLng(e.target.getBounds()._southWest.lat, ((e.target.getBounds()._northEast.lng + e.target.getBounds()._southWest.lng)/2));
+                    subsubhorizon_circle_title.setLatLng(latlng);
+                } catch (err) {}
+            });  
             
             polyline_visible = false;
             polyline = [
@@ -3457,6 +3509,8 @@ function addPosition(position) {
                             horizon_circle_title: horizon_circle_title,
                             subhorizon_circle: subhorizon_circle,
                             subhorizon_circle_title: subhorizon_circle_title,
+                            subsubhorizon_circle: subsubhorizon_circle,
+                            subsubhorizon_circle_title: subsubhorizon_circle_title,
                             num_positions: 0,
                             positions: [],
                             positions_ts: [],
@@ -3537,7 +3591,7 @@ function addPosition(position) {
         
         vehicle_info.kill = function() {
             $(".vehicle"+vehicle_info.uuid).remove();
-            potentialobjects = [marker, marker_shadow, landing_marker, horizon_circle, horizon_circle_title, subhorizon_circle, subhorizon_circle_title, polyline];
+            potentialobjects = [marker, marker_shadow, landing_marker, horizon_circle, horizon_circle_title, subhorizon_circle, subhorizon_circle_title, subsubhorizon_circle, subsubhorizon_circle, polyline];
             if (vehicle_info["prediction_polyline"] && map.hasLayer(vehicle_info["prediction_polyline"][0])) { 
                 map.removeLayer(vehicle_info["prediction_polyline"][0]);
                 map.removeLayer(vehicle_info["prediction_polyline"][1]);
@@ -5055,8 +5109,10 @@ function hideHorizonRings(){
         if(vehicles[vcallsign].vehicle_type == "balloon"){
             map.removeLayer(vehicles[vcallsign].horizon_circle);
             map.removeLayer(vehicles[vcallsign].subhorizon_circle);
+            map.removeLayer(vehicles[vcallsign].subsubhorizon_circle);
             map.removeLayer(vehicles[vcallsign].horizon_circle_title);
             map.removeLayer(vehicles[vcallsign].subhorizon_circle_title);
+            map.removeLayer(vehicles[vcallsign].subsubhorizon_circle_title);
         }
     }
 }
@@ -5072,10 +5128,12 @@ function updateHorizonVisibility(){
 
     map.addLayer(vehicles[follow_vehicle].horizon_circle);
     map.addLayer(vehicles[follow_vehicle].subhorizon_circle);
+    map.addLayer(vehicles[follow_vehicle].subsubhorizon_circle);
     vehicles[follow_vehicle].horizon_circle.fire("move");
     vehicles[follow_vehicle].subhorizon_circle.fire("move");
     map.addLayer(vehicles[follow_vehicle].horizon_circle_title);
     map.addLayer(vehicles[follow_vehicle].subhorizon_circle_title);
+    map.addLayer(vehicles[follow_vehicle].subsubhorizon_circle_title);
 }
 
 function hideTitles(){

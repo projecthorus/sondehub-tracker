@@ -809,6 +809,7 @@ $(window).ready(function() {
         "#sw_hide_chase",
         "#sw_hide_timebox",
         "#sw_hilight_vehicle",
+        '#sw_hide_horizon',
         '#sw_hide_titles',
         '#sw_layers_launches',
         '#sw_selective_sidebar',
@@ -904,6 +905,14 @@ $(window).ready(function() {
                 } else {
                     elm.addClass('present').show();
                     $('#lookanglesbox').css({top:'40px'});
+                }
+                break;
+            case "opt_hide_horizon":
+                if(on) {
+                    hideHorizonRings();
+                }
+                else {
+                    updateHorizonVisibility();
                 }
                 break;
             case "opt_hide_titles":

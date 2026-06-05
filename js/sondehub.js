@@ -998,25 +998,29 @@ function load() {
     map.on('zoomend', function() {
         sub_to_nearby_sondes();
         //do check for horizon labels
-        for (key in vehicles) {
-            if (vehicles[key]["vehicle_type"] == "balloon") {
-                if (vehicles[key]["horizon_circle"]["_map"]) 
-                {
-                    try {
-                        var zoom = map.getZoom();
-                        var horizonzoom = (Math.abs(Math.log(vehicles[key]["horizon_circle"].getRadius()/2000000)/0.75));
-                        var subhorizonzoom = (Math.abs(Math.log(vehicles[key]["subhorizon_circle"].getRadius()/2000000)/0.75));
-                        if (horizonzoom > zoom) {
-                            map.removeLayer(vehicles[key]["horizon_circle_title"]);
-                        } else {
-                            map.addLayer(vehicles[key]["horizon_circle_title"]);
-                        }
-                        if (subhorizonzoom > zoom) {
-                            map.removeLayer(vehicles[key]["subhorizon_circle_title"]);
-                        } else {
-                            map.addLayer(vehicles[key]["subhorizon_circle_title"]);
-                        }
-                    } catch(e){};
+        if (offline.get("opt_hide_horizon")) {
+            hideHorizonRings();
+        } else {
+            for (key in vehicles) {
+                if (vehicles[key]["vehicle_type"] == "balloon") {
+                    if (vehicles[key]["horizon_circle"]["_map"])
+                    {
+                        try {
+                            var zoom = map.getZoom();
+                            var horizonzoom = (Math.abs(Math.log(vehicles[key]["horizon_circle"].getRadius()/2000000)/0.75));
+                            var subhorizonzoom = (Math.abs(Math.log(vehicles[key]["subhorizon_circle"].getRadius()/2000000)/0.75));
+                            if (horizonzoom > zoom) {
+                                map.removeLayer(vehicles[key]["horizon_circle_title"]);
+                            } else {
+                                map.addLayer(vehicles[key]["horizon_circle_title"]);
+                            }
+                            if (subhorizonzoom > zoom) {
+                                map.removeLayer(vehicles[key]["subhorizon_circle_title"]);
+                            } else {
+                                map.addLayer(vehicles[key]["subhorizon_circle_title"]);
+                            }
+                        } catch(e){};
+                    }
                 }
             }
         }
@@ -5066,6 +5070,7 @@ function updateHorizonVisibility(){
     // (the last selected sonde)
     hideHorizonRings();
 
+    if (offline.get("opt_hide_horizon")) return;
     if (follow_vehicle === null) return;
     if (!vehicles.hasOwnProperty(follow_vehicle)) return;
     if (vehicles[follow_vehicle].vehicle_type != "balloon") return;

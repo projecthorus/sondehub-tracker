@@ -576,7 +576,7 @@ var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 });
 osm.id="Mapnik";
 
-var dark_matter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+var dark_matter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=cb1_2fdt_1_74fd9ff752215af923da7b6e', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
     minZoom: 1,
     maxZoom: 19,
@@ -598,7 +598,7 @@ var stamen_terrain = L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_terr
 
 stamen_terrain.id="Terrain";
 
-var cartodb_voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+var cartodb_voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_2fdt_1_74fd9ff752215af923da7b6e', {
 	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
 	subdomains: 'abcd',
 	maxZoom: 19

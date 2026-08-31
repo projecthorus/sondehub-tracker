@@ -1540,7 +1540,8 @@ function focusVehicle(vcallsign, ignoreOpt) {
         if (vehicle.vehicle_type == "balloon") {
             if(i == vcallsign || vcallsign === null || dont_focus) {
                 vehicle.marker.setOpacity(opacityFocused)
-                vehicle.marker.getTooltip().setOpacity(opacityFocused);
+                var tooltip = vehicle.marker.getTooltip();
+                if (tooltip) vehicle.marker.tooltip.setOpacity(opacityFocused);
                 vehicle.marker_shadow.setOpacity(opacityFocused)
                 if(vehicle.horizon_circle) vehicle.horizon_circle.setStyle({opacity:opacityFocused * 0.6});
                 if(vehicle.horizon_circle_title) vehicle.horizon_circle_title.setOpacity(opacityFocused * 0.8);
@@ -1550,7 +1551,8 @@ function focusVehicle(vcallsign, ignoreOpt) {
             }
             else {
                 vehicle.marker.setOpacity(opacityOther)
-                vehicle.marker.getTooltip().setOpacity(opacityOther);
+                var tooltip = vehicle.marker.getTooltip();
+                if (tooltip) vehicle.marker.tooltip.setOpacity(opacityOther);
                 vehicle.marker_shadow.setOpacity(opacityOther)
                 if(vehicle.horizon_circle) vehicle.horizon_circle.setStyle({opacity:opacityOther * 0.6});
                 if(vehicle.horizon_circle_title) vehicle.horizon_circle_title.setOpacity(opacityOther * 0.6);

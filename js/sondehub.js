@@ -1395,7 +1395,7 @@ function updateZoom() {
     for(x in launches._layers){launches.getLayer(x).setRadius(Math.min(map.getZoom(),8))}
     for(x in receivers){
         var radius = 6;
-        if (receivers[x].name in pledges){
+        if (getReceiverLevel(receivers[x]) !== null){
             radius = radius * 1.3
         }
         
@@ -4513,6 +4513,18 @@ function stopAjax() {
 
 var currentPosition = null;
 
+function getReceiverLevel(receiver) {
+    if (Object.prototype.hasOwnProperty.call(pledges, receiver.name)) {
+        return pledges[receiver.name].icon;
+    }
+
+    if (typeof receiver.software == "string" && receiver.software.startsWith("SondeFox")) {
+        return "bronze";
+    }
+
+    return null;
+}
+
 function updateCurrentPosition(lat, lon) {
     var latlng = new L.LatLng(lat, lon);
 
@@ -4540,20 +4552,21 @@ function updateCurrentPosition(lat, lon) {
 
 function updateReceiverMarker(receiver) {
   var latlng = new L.LatLng(receiver.lat, receiver.lon);
+  var receiverLevel = getReceiverLevel(receiver);
 
 
   // init a marker if the receiver doesn't already have one
   if(!receiver.marker) {
 
-    if (pledges.hasOwnProperty(receiver.name)) {
-        if (pledges[receiver.name].icon == "bronze") {
+    if (receiverLevel !== null) {
+        if (receiverLevel == "bronze") {
             receiver.marker = new L.CircleMarker(latlng, {
                 radius: Math.min(map.getZoom(),6*1.3),
                 fillOpacity: 0.6,
                 color: "#CD7F32",
             });
             receiver.infobox = new L.popup({ autoClose: false, closeOnClick: false, className: "bronze" }).setContent(receiver.description);
-        } else if (pledges[receiver.name].icon == "silver") {
+        } else if (receiverLevel == "silver") {
             receiver.marker = new L.CircleMarker(latlng, {
                 radius: Math.min(map.getZoom(),6*1.3),
                 fillOpacity: 0.6,

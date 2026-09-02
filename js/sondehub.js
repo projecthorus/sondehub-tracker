@@ -4513,16 +4513,62 @@ function stopAjax() {
 
 var currentPosition = null;
 
+function getPledgeIcon(pledge) {
+    if (pledge === null || typeof pledge != "object" || Array.isArray(pledge)) {
+        return null;
+    }
+
+    if (typeof pledge.icon != "string" || pledge.icon.length === 0) {
+        return null;
+    }
+
+    return pledge.icon;
+}
+
 function getReceiverLevel(receiver) {
-    if (Object.prototype.hasOwnProperty.call(pledges, receiver.name)) {
-        return pledges[receiver.name].icon;
+    if (receiver === null || typeof receiver != "object" || pledges === null ||
+        typeof pledges != "object" || Array.isArray(pledges)) {
+        return null;
     }
 
-    if (typeof receiver.software == "string" && receiver.software.startsWith("SondeFox")) {
-        return "bronze";
+    if (typeof receiver.name == "string" && receiver.name !== "_software" &&
+        Object.prototype.hasOwnProperty.call(pledges, receiver.name)) {
+        var receiverIcon = getPledgeIcon(pledges[receiver.name]);
+        if (receiverIcon !== null) {
+            return receiverIcon;
+        }
     }
 
-    return null;
+    if (typeof receiver.software != "string") {
+        return null;
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(pledges, "_software")) {
+        return null;
+    }
+
+    var softwarePledges = pledges._software;
+    if (softwarePledges === null || typeof softwarePledges != "object" || Array.isArray(softwarePledges)) {
+        return null;
+    }
+
+    var matchedPrefix = "";
+    var matchedIcon = null;
+    for (var softwarePrefix in softwarePledges) {
+        if (!Object.prototype.hasOwnProperty.call(softwarePledges, softwarePrefix) ||
+            softwarePrefix.length === 0 || softwarePrefix.length <= matchedPrefix.length ||
+            !receiver.software.startsWith(softwarePrefix)) {
+            continue;
+        }
+
+        var softwareIcon = getPledgeIcon(softwarePledges[softwarePrefix]);
+        if (softwareIcon !== null) {
+            matchedPrefix = softwarePrefix;
+            matchedIcon = softwareIcon;
+        }
+    }
+
+    return matchedIcon;
 }
 
 function updateCurrentPosition(lat, lon) {

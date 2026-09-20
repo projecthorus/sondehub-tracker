@@ -611,14 +611,6 @@ var opentopomap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png'
 });
 opentopomap.id = "OpenTopoMap";
 
-//not used
-var getlost = L.tileLayer('https://live.getlost.com.au/{z}/{x}/{y}.jpg', {
-	attribution: '&copy; <a href="https://www.getlost.com.au/current-map-information/">Getlost Maps</a>',
-	minZoom: 4,
-	maxZoom: 16,
-});
-getlost.id = "GetLost";
-
 var highSight = L.tileLayer('https://api.highsight.dev/v1/tiles/{z}/{x}/{y}?key=ARX3jYxzWotJVz7ZgdDiMQI18tZJ5WCk', {
     attribution: '&copy; <a href="https://highsight.dev/">HighSight</a>',
     maxZoom: 9,
@@ -628,6 +620,20 @@ var highSight = L.tileLayer('https://api.highsight.dev/v1/tiles/{z}/{x}/{y}?key=
 
 highSight.id = "HighSight";
 
+// OpenFreeMap Vector Layers
+// We may eventually switch to all vector layers
+
+// Replacing CartoDB Voyager
+var openfreemap_liberty = L.maplibreGL({
+    style: 'https://tiles.openfreemap.org/styles/liberty',
+});
+openfreemap_liberty.id = "OpenFreeMap-Liberty";
+
+// Replacement for CartoDB DarkMatter
+var openfreemap_dark = L.maplibreGL({
+    style: 'https://tiles.openfreemap.org/styles/dark',
+});
+openfreemap_dark.id = "OpenFreeMap-Dark";
 
 var baseMaps = {
     "Mapnik": osm,
@@ -636,7 +642,9 @@ var baseMaps = {
     "Terrain": stamen_terrain,
     "Voyager": cartodb_voyager,
     "OpenTopoMap": opentopomap,
-    "HighSight": highSight
+    "HighSight": highSight,
+    "OFM-Liberty": openfreemap_liberty,
+    "OFM-Dark": openfreemap_dark
 }
 
 var selectedLayer = "Mapnik";

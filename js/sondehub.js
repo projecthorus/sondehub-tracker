@@ -2793,7 +2793,12 @@ function mapInfoBox_handle_path_fetch(id,vehicle) {
         url: url,
         dataType: "json",
         success: function(data) {
-            mapInfoBox_handle_path_new(data, vehicle, date);
+            if (Object.keys(data).length === 0) {
+                // Not in the telemetry API (older sonde), use the history archive
+                mapInfoBox_handle_path_old(vehicle, id);
+            } else {
+                mapInfoBox_handle_path_new(data, vehicle, date);
+            }
         },
         error: function() {
             mapInfoBox_handle_path_old(vehicle, id);
@@ -2802,98 +2807,92 @@ function mapInfoBox_handle_path_fetch(id,vehicle) {
 };
 
 function mapInfoBox_handle_path_old(vehicle, id) {
-    var url = "https://api.v2.sondehub.org/sonde/" + vehicle.callsign;
-    var index = vehicle["positions_ids"][vehicle["positions_ts"].indexOf(id)].substring(vehicle.callsign.length + 1);
-    
-    $.ajax({
-        type: "GET",
-        url: url,
-        dataType: "json",
-        success: function(data) {
+    // Same URL as refreshSingleNew(), so the file is usually already in the browser's HTTP cache
+    var url = "https://sondehub-history.s3.amazonaws.com/serial/" + encodeURIComponent(vehicle.callsign) + ".json.gz";
+    var date = new Date(parseInt(id)).toISOString();
+    var id_index = vehicle["positions_ts"].indexOf(id);
+
+    function not_found() {
+        mapInfoBox.setContent("not&nbsp;found");
+        mapInfoBox.openOn(map);
+    }
+
+    if (id_index == -1) {
+        not_found();
+        return;
+    }
+    // position_id is "<serial>-<datetime>", with the datetime exactly as stored in the archive
+    var index = vehicle["positions_ids"][id_index].substring(vehicle.callsign.length + 1);
+
+    // fetch instead of $.ajax: "force-cache" reuses the copy already downloaded for this sonde
+    fetch(url, {cache: "force-cache"})
+        .then(function(response) {
+            if (!response.ok) throw new Error(response.status);
+            return response.json();
+        })
+        .then(function(data) {
+            // All archive rows for this point (one per uploader, sometimes duplicated)
+            var rows = [];
             for (var i = 0; i < data.length; i++) {
-                if (data[i]["datetime"] == index) {
-                    data = data[i];
-                    div = document.createElement('div');
-
-                    html = "<div style='line-height:16px;position:relative;'>";
-                    html += "<div><span class='old_path_serial'></span> <span style='' class=''></span></div>";
-                    html += "<hr style='margin:5px 0px'>";
-                    html += "<div style='margin-bottom:5px;'><b><i class='icon-location'></i> </b><span class='old_path_coords'></span></div>";
-
-                    var imp = offline.get('opt_imperial');
-                    var text_alt = Number((imp) ? Math.floor(3.2808399 * parseInt(data.alt)) : parseInt(data.alt)).toLocaleString("us");
-                    text_alt += " " + ((imp) ? 'ft':'m');
-
-                    html += "<div><b>Altitude: </b><span class='old_path_alt'></span></div>";
-                    html += "<div><b>Time: </b><span class='old_path_time_short'></span></div>";
-
-                    var value = vehicle.path_length;
-
-                    html += "<div><b>Distance: </b><span class='old_path_time_distance'></span>";
-
-                    if(offline.get('opt_imperial')) {
-                        var distance = Math.round(value*0.000621371192) + " mi";
-                    } else {
-                        var distance = Math.round(value/10)/100 + " km";
-                    }
-
-                    html += "</div>";
-                    html += "<div><b>Duration: </b><span class='old_path_duration'></span></div>";
-
-                    html += "<hr style='margin:5px 0px'>";
-
-                    if (data.hasOwnProperty("humidity")) {
-                        html += "<div><b>Relative Humidity: </b><span class='old_path_humidity'></span> %</div>";
-                    };
-                    if (data.hasOwnProperty("temp")) {
-                        html += "<div><b>Temperature External: </b><span class='old_path_temp'></span>°C</div>";
-                    };
-                    if (data.hasOwnProperty("comment")) {
-                        html += "<div><b>Comment: </b><span class='old_path_comment'></span></div>";
-                    };
-
-                    html += "<hr style='margin:0px;margin-top:5px'>";
-                    html += "<div style='font-size:11px;'>"
-
-                    if (data.hasOwnProperty("uploader_callsign")) {
-                        html += "<div><span class='old_path_uploader_callsign'></span></div>";
-                    };
-
-                    
-
-                    div.innerHTML = html;
-
-                    div.getElementsByClassName("old_path_serial")[0].textContent = data.serial
-                    div.getElementsByClassName("old_path_time")[0].textContent = "("+data.datetime+")"
-                    div.getElementsByClassName("old_path_coords")[0].innerHTML = format_coordinates(data.lat, data.lon, data.serial)
-                    div.getElementsByClassName("old_path_alt")[0].textContent = text_alt
-                    div.getElementsByClassName("old_path_time_short")[0].textContent = formatDate(stringToDateUTC(data.datetime))
-                    div.getElementsByClassName("old_path_time_distance")[0].textContent = distance
-                    div.getElementsByClassName("old_path_duration")[0].textContent = format_time_friendly(vehicle.start_time, convert_time(vehicle.curr_position.gps_time))
-                    div.getElementsByClassName("old_path_humidity")[0].textContent = data.humidity
-                    div.getElementsByClassName("old_path_temp")[0].textContent = data.temp
-                    div.getElementsByClassName("old_path_comment")[0].textContent = data.comment
-
-                    if (data.hasOwnProperty("uploader_callsign")) {
-                        div.getElementsByClassName("old_path_uploader_callsign")[0].textContent = data.uploader_callsign
-                    }
-
-                    mapInfoBox.setContent(div);
-                    mapInfoBox.openOn(map);
-
-                    setTimeout(function() {
-                        div.parentElement.style.overflow = "";
-                        div.parentElement.style.overflowWrap = "break-word";
-                    }, 16);
+                if ((data[i].datetime || data[i].time_received) == index) {
+                    rows.push(data[i]);
                 }
             }
-        },
-        error: function() {
-            mapInfoBox.setContent("not&nbsp;found");
-            mapInfoBox.openOn(map);
-            return;
-        }     
-    });
+            if (rows.length == 0) {
+                not_found();
+                return;
+            }
+
+            // Build a packet in the telemetry API format, so mapInfoBox_handle_path_new can render it
+            var packet = {};
+            for (var key in rows[0]) {
+                if (key == "uploader_callsign" || key == "snr" || key == "rssi") continue;
+                if (rows[0][key] !== null) packet[key] = rows[0][key];
+            }
+
+            // SondeHub V1 / V1.5 archive rows store numbers as strings
+            ["lat", "lon", "alt", "humidity", "temp", "batt", "pressure", "frequency"].forEach(function(field) {
+                if (typeof packet[field] === "string") packet[field] = parseFloat(packet[field]);
+            });
+            if (packet.subtype == "SondehubV1") {
+                delete packet.subtype;
+            }
+            if (packet.type == "payload_telemetry") {
+                // V1.5: type and frequency are inside the comment, e.g. "RS41 N3540033 403.000 MHz"
+                var comment = (packet.comment || "").split(" ");
+                delete packet.type;
+                if (v1types.hasOwnProperty(comment[0])) {
+                    packet.type = v1types[comment[0]];
+                    if (v1manufacturers.hasOwnProperty(packet.type)) {
+                        packet.manufacturer = v1manufacturers[packet.type];
+                    }
+                }
+                if (!isNaN(parseFloat(comment[2]))) {
+                    packet.frequency = parseFloat(comment[2]);
+                }
+            }
+
+            // One entry per uploader, skipping duplicate archive rows
+            packet.uploaders = [];
+            var seen = {};
+            rows.forEach(function(row) {
+                if (!row.uploader_callsign || seen[row.uploader_callsign]) return;
+                seen[row.uploader_callsign] = true;
+                var uploader = {uploader_callsign: row.uploader_callsign};
+                if (typeof row.snr === "number") uploader.snr = row.snr;
+                if (typeof row.rssi === "number") uploader.rssi = row.rssi;
+                if (row.frequency != null) uploader.frequency = row.frequency;
+                packet.uploaders.push(uploader);
+            });
+
+            var response = {};
+            response[vehicle.callsign] = {};
+            response[vehicle.callsign][date] = packet;
+            mapInfoBox_handle_path_new(response, vehicle, date);
+        })
+        .catch(function() {
+            not_found();
+        });
 }
 
 function mapInfoBox_handle_path_new(data, vehicle, date) {

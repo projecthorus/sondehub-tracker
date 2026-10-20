@@ -2793,6 +2793,7 @@ function mapInfoBox_handle_path_fetch(id,vehicle) {
         url: url,
         dataType: "json",
         success: function(data) {
+            if (Object.keys(data).length === 0) return mapInfoBox_handle_path_old(vehicle, id); // not in telemetry, fall back to history
             mapInfoBox_handle_path_new(data, vehicle, date);
         },
         error: function() {
@@ -2816,7 +2817,7 @@ function mapInfoBox_handle_path_old(vehicle, id) {
                     div = document.createElement('div');
 
                     html = "<div style='line-height:16px;position:relative;'>";
-                    html += "<div><span class='old_path_serial'></span> <span style='' class=''></span></div>";
+                    html += "<div><span class='old_path_serial'></span> <span style='' class='old_path_time'></span></div>";
                     html += "<hr style='margin:5px 0px'>";
                     html += "<div style='margin-bottom:5px;'><b><i class='icon-location'></i> </b><span class='old_path_coords'></span></div>";
 
@@ -2870,9 +2871,17 @@ function mapInfoBox_handle_path_old(vehicle, id) {
                     div.getElementsByClassName("old_path_time_short")[0].textContent = formatDate(stringToDateUTC(data.datetime))
                     div.getElementsByClassName("old_path_time_distance")[0].textContent = distance
                     div.getElementsByClassName("old_path_duration")[0].textContent = format_time_friendly(vehicle.start_time, convert_time(vehicle.curr_position.gps_time))
-                    div.getElementsByClassName("old_path_humidity")[0].textContent = data.humidity
-                    div.getElementsByClassName("old_path_temp")[0].textContent = data.temp
-                    div.getElementsByClassName("old_path_comment")[0].textContent = data.comment
+                    // These spans only exist when the field is present
+                    if (data.hasOwnProperty("humidity")) {
+                        div.getElementsByClassName("old_path_humidity")[0].textContent = data.humidity
+                    }
+                    if (data.hasOwnProperty("temp")) {
+                        div.getElementsByClassName("old_path_temp")[0].textContent = data.temp
+                    }
+                    // V2 sondes don't have a comment
+                    if (data.hasOwnProperty("comment")) {
+                        div.getElementsByClassName("old_path_comment")[0].textContent = data.comment
+                    }
 
                     if (data.hasOwnProperty("uploader_callsign")) {
                         div.getElementsByClassName("old_path_uploader_callsign")[0].textContent = data.uploader_callsign

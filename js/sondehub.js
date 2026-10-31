@@ -4960,7 +4960,7 @@ function updateRecoveryPane(r){
             }
 
             html += "<div style='line-height:16px;position:relative;'>";
-            html += "<div><b><u>"+r[i].serial+(_recovered_text)+r[i].recovered_by+"</u></b></div>";
+            html += "<div><b><u>"+$('<span>').text(r[i].serial+(_recovered_text)+r[i].recovered_by).html()+"</u></b></div>";
             html += "<div style='margin-bottom:5px;'><b><button style='margin-bottom:0px;' onclick='panToRecovery(\"" + r[i].serial + "\")'><i class='icon-location'></i></button>&nbsp;</b>"+format_coordinates(lat, lon, r[i].serial)+"</div>";
     
             var imp = offline.get('opt_imperial');
@@ -4968,7 +4968,7 @@ function updateRecoveryPane(r){
             text_alt     += "&nbsp;" + ((imp) ? 'ft':'m');
     
             html += "<div><b>Time:&nbsp;</b>"+formatDate(stringToDateUTC(r[i].datetime))+"</div>";
-            html += "<div><b>Reported by:&nbsp;</b>"+r[i].recovered_by+"</div>";
+            html += "<div><b>Reported by:&nbsp;</b>"+$('<span>').text(r[i].recovered_by).html()+"</div>";
             html += "<div><b>Notes:&nbsp;</b>"+$('<div>').text(r[i].description).html()+"</div>";
             html += "<div><b>Flight Path:&nbsp;</b><a href=\"javascript:showRecoveredMap('" + r[i].serial + "')\">"+r[i].serial+"</a></div>";
             html += "<hr style='margin:5px 0px'>";

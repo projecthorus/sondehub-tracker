@@ -1684,7 +1684,7 @@ function formatDate(date,utc) {
 }
 
 function updateVehicleInfo(vcallsign, newPosition) {
-
+  vcallsign = encodeURIComponent(vcallsign); //hack to prevent xss
     // Note - at this point, vehicles[vcallsign].curr_position has already been set to the values in newPosition
     // so the newPosition argument is kind of redundant, we could just extract curr_position and use that.
   var vehicle = vehicles[vcallsign];

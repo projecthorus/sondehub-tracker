@@ -12,6 +12,7 @@ function formatData(data, live) {
             data = {"entry": data};
         }
         for (let entry in data) {
+            data[entry].serial = encodeURIComponent(data[entry].serial);
             var dataTempEntry = {};
             var station = data[entry].uploader_callsign;
             dataTempEntry.callsign = {};
@@ -143,6 +144,7 @@ function formatData(data, live) {
             if (data.hasOwnProperty(key)) {
                 if (typeof data[key] === 'object') {
                     for (let i in data[key]) {
+                        data[key][i].serial = encodeURIComponent(data[key][i].serial); // hack for xss prevention
                         var dataTempEntry = {};
                         var station = data[key][i].uploader_callsign;
                         dataTempEntry.callsign = {};
@@ -253,6 +255,7 @@ function formatData(data, live) {
         }
     } else { // AWS
         for (var i = data.length - 1; i >= 0; i--) {
+            data[i].serial = encodeURIComponent(data[i].serial); // hack for xss prevention
             if (data[i].hasOwnProperty('subtype') && data[i].subtype == "SondehubV1") { // SondeHub V1
                 var dataTempEntry = {};
                 var station = data[i].uploader_callsign;

@@ -3458,9 +3458,9 @@ function addPosition(position) {
 
         if (!offline.get("opt_hide_titles")) {
             if (vehicle_type == "car") {
-                title = marker.bindTooltip(vcallsign, {direction: 'center', permanent: 'false', className: 'serialtooltip'});
+                title = marker.bindTooltip($('<span>').text(vcallsign).html(), {direction: 'center', permanent: 'false', className: 'serialtooltip'});
             } else {
-                title = marker.bindTooltip((tempTitle), {direction: 'center', permanent: 'false', className: 'serialtooltip'});
+                title = marker.bindTooltip($('<span>').text(tempTitle).html(), {direction: 'center', permanent: 'false', className: 'serialtooltip'});
             }
         } else {
             title = null;

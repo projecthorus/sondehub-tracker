@@ -336,7 +336,8 @@ var ls_pred = false;
 AWS.config.region = 'us-east-1';
   
 var s3 = new AWS.S3({
-    params: {Bucket: 'sondehub-history'}
+    params: {Bucket: 'history'},
+    endpoint: 'https://sondehub.org'
 });
 
 var tempLaunchData = {};
@@ -4326,7 +4327,7 @@ function refreshSingleNew(serial) {
           if (xhr.responseURL.includes(newdata_url)){
             $.ajax({
                 type: "GET",
-                url: "https://sondehub-history.s3.amazonaws.com/serial/"+ encodeURIComponent(serial) +".json.gz",
+                url: "https://history.sondehub.org/serial/"+ encodeURIComponent(serial) +".json.gz",
                 dataType: "json",
                 success: function(data, textStatus) {
                   response = formatData(data, false);

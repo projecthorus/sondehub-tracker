@@ -118,7 +118,7 @@ function getHistorical (id, callback, continuation) {
 
 // Download summary data from AWS S3
 function downloadHistorical (suffix) {
-    var url = "https://sondehub-history.s3.amazonaws.com/" + suffix;
+    var url = "https://history.sondehub.org/" + suffix;
     var ajaxReq = $.ajax({
         type: "GET",
         url: url,

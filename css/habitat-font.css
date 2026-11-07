@@ -77,3 +77,15 @@
 .icon-daylight:before         { content: "\f008"; }
 .icon-settings:before         { content: "\f010"; }
 
+/* Font Awesome 4.7.0 by Dave Gandy; font licensed under SIL OFL 1.1.
+ * https://fontawesome.com/v4/license/ */
+@font-face {
+    font-family: 'FontAwesomeHistory';
+    src: url('../font/fontawesome-webfont.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+.icon-history:before {
+    font-family: 'FontAwesomeHistory';
+    content: "\f1da";
+}

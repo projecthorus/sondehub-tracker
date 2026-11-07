@@ -6,6 +6,7 @@ var predictions_url = "https://api.v2.sondehub.org/predictions?vehicles=";
 var launch_predictions_url = "https://api.v2.sondehub.org/predictions/reverse";
 var recovered_sondes_url = "https://api.v2.sondehub.org/recovered";
 var recovered_sondes_stats_url = "https://api.v2.sondehub.org/recovered/stats";
+var skewt_url = "https://sondehub.org/skewt/?serial=";
 
 // Grafana dashboard for Radiosondes
 var grafana_url = "https://grafana.v2.sondehub.org/d/bbaa7894-e5f4-4c0d-be96-897b4ffde43b/radiosonde-telemetry-dashboard?";
@@ -44,8 +45,6 @@ var predictionAjax = [];
 var stationHistoricalData = {};
 var historicalPlots = {};
 var historicalAjax = [];
-
-var skewtdata = [];
 
 var launches = new L.LayerGroup();
 var focusID = 0;
@@ -466,68 +465,6 @@ function calculate_lookangles(a, b) {
         'great_circle_distance': great_circle_distance,
         'bearing': str_bearing
     };
-}
-
-function getPressure(altitude){
-
-    // Constants
-    airMolWeight = 28.9644;  // Molecular weight of air
-    densitySL = 1.225;  // Density at sea level [kg/m3]
-    pressureSL = 101325;  // Pressure at sea level [Pa]
-    temperatureSL = 288.15;  // Temperature at sea level [deg K]
-    gamma = 1.4;
-    gravity = 9.80665;  // Acceleration of gravity [m/s2]
-    tempGrad = -0.0065;  // Temperature gradient [deg K/m]
-    RGas = 8.31432;  // Gas constant [kg/Mol/K]
-    R = 287.053;
-    deltaTemperature = 0.0;
-
-    // Lookup Tables
-    altitudes = [0, 11000, 20000, 32000, 47000, 51000, 71000, 84852];
-    pressureRels = [
-        1,
-        2.23361105092158e-1,
-        5.403295010784876e-2,
-        8.566678359291667e-3,
-        1.0945601337771144e-3,
-        6.606353132858367e-4,
-        3.904683373343926e-5,
-        3.6850095235747942e-6,
-    ];
-    temperatures = [288.15, 216.65, 216.65, 228.65, 270.65, 270.65, 214.65, 186.946];
-    tempGrads = [-6.5, 0, 1, 2.8, 0, -2.8, -2, 0];
-    gMR = gravity * airMolWeight / RGas;
-
-    // Pick a region to work in
-    i = 0;
-    if (altitude > 0){
-        while (altitude > altitudes[i + 1]){
-            i = i + 1;
-        }
-    }
-
-    // Lookup based on region
-    baseTemp = temperatures[i];
-    tempGrad = tempGrads[i] / 1000.0;
-    pressureRelBase = pressureRels[i];
-    deltaAltitude = altitude - altitudes[i];
-    temperature = baseTemp + tempGrad * deltaAltitude;
-
-    // Calculate relative pressure
-    if(Math.abs(tempGrad) < 1e-10){
-        pressureRel = pressureRelBase * Math.exp(
-            -1 * gMR * deltaAltitude / 1000.0 / baseTemp
-        );
-    } else{
-        pressureRel = pressureRelBase * Math.pow(
-            baseTemp / temperature, gMR / tempGrad / 1000.0
-        );
-    }
-
-    // Finally, work out the pressure
-    pressure = pressureRel * pressureSL;
-
-    return pressure/100.0; // Return pressure in hPa
 }
 
 function update_lookangles(vcallsign) {
@@ -2010,7 +1947,7 @@ function updateVehicleInfo(vcallsign, newPosition) {
            '<div class="data">' +
            '<img class="'+((vehicle.vehicle_type=="car")?'car':'')+'" src="'+image+'" />' +
            ((vehicle.vehicle_type!="car") ? '<span class="sbutton" onclick="shareVehicle(\'' + vcallsign + '\')" style="top:'+(vehicle.image_src_size[1]+55)+'px">Share</span>' : '') +
-           ((vehicle.vehicle_type!="car") ? '<span class="sbutton" onclick="skewTdraw(\'' + vcallsign + '\')" style="top:'+(vehicle.image_src_size[1]+85)+'px">SkewT</span>' : '') +
+           ((vehicle.vehicle_type!="car") ? '<span class="sbutton" onclick="openURL(\'' + skewt_url + encodeURIComponent(vcallsign) + '\')" style="top:'+(vehicle.image_src_size[1]+85)+'px">SkewT</span>' : '') +
            ((vehicle.vehicle_type!="car") ? '<span class="sbutton" onclick="openURL(\'' + grafana_dashboard_url + '\')" style="top:'+(vehicle.image_src_size[1]+115)+'px">Plots</span>' : '') +
            '<div class="left">' +
            '<dl>';
@@ -2022,7 +1959,7 @@ function updateVehicleInfo(vcallsign, newPosition) {
            '<div class="data">' +
            '<img class="'+((vehicle.vehicle_type=="car")?'car':'')+'" src="'+image+'" />' +
            ((vehicle.vehicle_type!="car") ? '<span class="sbutton" onclick="shareVehicle(\'' + vcallsign + '\')" style="top:55px">Share</span>' : '') +
-           ((vehicle.vehicle_type!="car") ? '<span class="sbutton" onclick="skewTdraw(\'' + vcallsign + '\')" style="top:85px">SkewT</span>' : '') +
+           ((vehicle.vehicle_type!="car") ? '<span class="sbutton" onclick="openURL(\'' + skewt_url + encodeURIComponent(vcallsign) + '\')" style="top:85px">SkewT</span>' : '') +
            ((vehicle.vehicle_type!="car") ? '<span class="sbutton" onclick="openURL(\'' + grafana_dashboard_url + '\')" style="top:115px">Plots</span>' : '') + 
            '<div class="left">' +
            '<dl>';
@@ -2078,233 +2015,6 @@ function updateVehicleInfo(vcallsign, newPosition) {
 
   return true;
 }
-
-function skewTdelete () {
-    var box = $("#skewtbox");
-    
-    skewt.clear();
-    $('#resetSkewt').hide();
-    $('#deleteSkewt').hide();
-    $("#skewtSerial").text("Select a Radiosonde from the list and click 'SkewT' to plot. Note that not all radiosonde types are supported.");
-    box.hide();
-    lhash_update(true);
-    //$('.skewt').hide();
-    $("#skewt-plot").empty();
-    checkSize();
-}
-
-function skewTrefresh () {
-    skewt.clear();
-    $("#skewt-plot").empty();
-    $('#resetSkewt').hide();
-    $('#deleteSkewt').hide();
-
-    skewt = new SkewT('#skewt-plot');
-    
-    try {
-        skewt.plot(skewtdata);
-        $('#resetSkewt').show();
-        $('#deleteSkewt').show();
-    }
-    catch(err) {}
-}
-
-function skewTdraw (callsign) {
-    // Open sidebar
-    var box = $("#skewtbox");
-
-    if(box.is(':hidden')) {
-        $('.flatpage, #homebox').hide();
-        $('.skewt').show();
-        box.show().scrollTop(0);
-        lhash_update(true);
-        checkSize();
-    };
-
-    // Delete existing
-    try {
-        skewt.clear();
-    } catch (err) {}
-
-    $('#resetSkewt').hide();
-    $('#deleteSkewt').hide();
-    $("#skewt-plot").empty();
-    $("#skewtErrors").text("");
-    $("#skewtErrors").hide();
-
-    // Loading gif
-    $("#skewtLoading").show();
-    $("#skewtSerial").show();
-    $("#skewtSerial").text("Serial: " + callsign);
-
-    // Download Data
-    var data_url = "https://api.v2.sondehub.org/sonde/" + encodeURIComponent(callsign);
-    $.ajax({
-        type: "GET",
-        url: data_url,
-        dataType: "json",
-        success: function(data) {
-            processSkewT(data);
-        }
-    });
-
-    // Credit https://github.com/projecthorus/sondehub-card/blob/main/js/utils.js#L116
-    function processSkewT (data) {
-        burst_idx = -1;
-        max_alt = -99999.0;
-        for (let i = 0; i < data.length; i++){
-            alt = parseFloat(data[i].alt);
-            if (alt > max_alt){
-                max_alt = alt;
-                burst_idx = i;
-            }
-        }
-
-
-        if(data.length < 50){
-            $("#skewtErrors").text("Insufficient data for Skew-T plot (<50 points).");
-            $("#skewtErrors").show();
-            return;
-        }
-    
-        // Check that we have ascent data
-        if (burst_idx <= 0){
-            $("#skewtErrors").text("Insufficient data for Skew-T plot (Only descent data available).");
-            $("#skewtErrors").show();
-            return;
-        }
-    
-        // Check that the first datapoint is at a reasonable altitude.
-        if (data[0].alt > 15000){
-            $("#skewtErrors").text("Insufficient data for Skew-T plot (Only data > 15km available)");
-            $("#skewtErrors").show();
-            return;
-        }
-
-        v1_data = false;
-        sonde_type = data[data.length-1].type;
-        if(sonde_type == 'payload_telemetry'){
-            // Sondehub v1 data.
-            v1_data = true;
-        }
-
-        var skewt_data = [];
-        decimation = 25;
-        if (v1_data == true){
-            decimation = 1;
-        }
-
-        idx = 1;
-
-        while (idx < burst_idx){
-            entry = data[idx];
-            old_entry = data[idx-1];
-    
-            _old_date = new Date(old_entry.datetime);
-            _new_date = new Date(entry.datetime);
-            _time_delta = (_new_date - _old_date)/1000.0;
-            if (_time_delta <= 0){
-                idx = idx + 1;
-                continue;
-            }
-
-    
-            _temp = null;
-            _dewp = -1000.0;
-            _pressure = null;
-    
-            // Extract temperature datapoint
-            if (entry.hasOwnProperty('temp')){
-                if(parseFloat(entry.temp) > -250.0){
-                    _temp = parseFloat(entry.temp);
-                } else{
-                    idx = idx + 1;
-                    continue;
-                }
-            }else{
-                // No temp data. Skip to the next point
-                idx = idx + 1;
-                continue;
-            }
-
-    
-            _dewp = null;
-
-            // Try and extract RH datapoint
-            if (entry.hasOwnProperty('humidity')){
-                if(parseFloat(entry.humidity) >= 0.0){
-                    _rh = parseFloat(entry.humidity);
-                    // Calculate the dewpoint
-                    _dewp = (243.04 * (Math.log(_rh / 100) + ((17.625 * _temp) / (243.04 + _temp))) / (17.625 - Math.log(_rh / 100) - ((17.625 * _temp) / (243.04 + _temp))));
-                } 
-            }
-    
-            // Calculate movement
-            _old_pos = {'lat': old_entry.lat, 'lon': old_entry.lon, 'alt': old_entry.alt};
-            _new_pos = {'lat': entry.lat, 'lon': entry.lon, 'alt': entry.alt};
-    
-            // Skip over negative altitudes, the skewT library really doesn't like these.
-            if(_new_pos.alt < 10){
-                idx = idx + 1;
-                continue;
-            }
-
-            _pos_info = calculate_lookangles(_old_pos, _new_pos);
-            _wdir = (_pos_info['azimuth']+180.0)%360.0;
-            _wspd = _pos_info['great_circle_distance']/_time_delta;
-    
-            if (entry.hasOwnProperty('pressure')){
-                _pressure = entry.pressure;
-            } else {
-                // Otherwise, calculate it
-                _pressure = getPressure(_new_pos.alt);
-            }
-    
-            if(_pressure < 10.0){
-                break;
-            }
-    
-            _new_skewt_data = {"press": _pressure, "hght": _new_pos.alt, "temp": _temp, "wdir": _wdir, "wspd": _wspd};
-            
-            if (_dewp != null){
-                _new_skewt_data.dwpt = _dewp
-            }
-    
-            skewt_data.push(_new_skewt_data);
-    
-            idx = idx + decimation;
-        }
-
-        skewtdata = skewt_data;
-
-
-        $("#skewtLoading").hide();
-
-        if (skewtdata.length > 0){
-
-            if(box.is(':hidden')) {
-                $('.flatpage, #homebox').hide();
-                $('.skewt').show();
-                box.show().scrollTop(0);
-                lhash_update(true);
-                checkSize();
-            };
-
-            skewt = new SkewT('#skewt-plot');
-    
-            try {
-                skewt.plot(skewtdata);
-                $('#resetSkewt').show();
-                $('#deleteSkewt').show();
-            }
-            catch(err) {}
-    
-        } else {
-            $("#skewtErrors").show();
-            $("#skewtErrors").text("Insufficient Data available, or no Temperature/Humidity data available to generate Skew-T plot.");
-        };
-    }
-};
 
 function set_polyline_visibility(vcallsign, val) {
     var vehicle = vehicles[vcallsign];

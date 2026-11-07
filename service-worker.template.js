@@ -10,8 +10,6 @@ self.addEventListener('install', function(event) {
                     '/css/main.css',
                     '/css/leaflet.css',
                     '/css/leaflet.fullscreen.css',
-                    '/css/skewt.css',
-                    '/js/skewt.js',
                     '/js/aws-sdk-2.1029.0.min.js',
                     '/js/leaflet.js',
                     '/js/Leaflet.fullscreen.min.js',
@@ -44,6 +42,7 @@ self.addEventListener('install', function(event) {
                     '/img/sondehub_au.png',
                     '/favicon.ico',
                     '/font/HabitatFont.woff',
+                    '/font/fontawesome-webfont.woff2',
                     '/font/Roboto-regular.woff',
                     '/index.html',
                     '/'
